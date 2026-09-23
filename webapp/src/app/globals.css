@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/*
+ * Tema escuro "shinobi" — fixo por enquanto (sem alternância clara/escura;
+ * isso fica pra Fase 7 do roadmap). Paleta: fundo quase preto, cards em
+ * grafite, destaque em dourado (âmbar), com cores semânticas por recurso
+ * (PV vermelho, Chakra azul, sucesso verde).
+ */
+:root {
+  --background: #0b0a0f;
+  --foreground: #f1ece1;
+
+  --surface: #18161f;
+  --surface-2: #211f2a;
+  --surface-foreground: #f1ece1;
+  --border: #2b2833;
+  --muted: #1e1c26;
+  --muted-foreground: #948d9c;
+
+  --primary: #e5b93a;
+  --primary-foreground: #171106;
+  --accent: #ef5b4c;
+  --accent-foreground: #180706;
+
+  --hp: #ef4444;
+  --chakra: #3ea1ff;
+  --success: #34d399;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-hp: var(--hp);
+  --color-chakra: var(--chakra);
+  --color-success: var(--success);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Esconde as setas nativas do <input type="number"> — os steppers próprios
+   (componente Stepper) substituem essa interação. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
