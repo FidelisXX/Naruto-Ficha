@@ -1,0 +1,93 @@
+# Naruto 5e — App de Criação de Ficha & Jutsu
+
+Roadmap de desenvolvimento incremental, baseado na leitura de:
+- `Ficha 3.1 Naruto 5e - Ficha.pdf`
+- `Manual Shinobi - V3.1.pdf`
+- `Anotações do Jiraya V3.1.pdf`
+- `Estudos de Tsunade - v3.1.pdf`
+- `Poderes Secretos.pdf`
+
+**Stack decidida:** Web app em **Next.js + TypeScript**, persistência **local (localStorage/IndexedDB no navegador)**, sem backend/login por enquanto.
+
+---
+
+## 0. Achados-chave do material fonte
+
+- O sistema é um reskin completo de D&D 5e: atributos FOR/DES/CON/INT/SAB/CAR, perícias renomeadas (Ninshou=Int/Ninjutsu, Ilusões=Sab/Genjutsu, Artes Marciais=For/Taijutsu, Controle de Chakra=Con), bônus de proficiência começando em **+3** (não +2), Maestria em até 3 camadas (+2/+4/+6).
+- **Chakra** é um segundo "PV" com Dado de Chakra por classe, recuperado em descansos.
+- **Jutsu** tem 4 tipos: Ninjutsu, Genjutsu, Taijutsu, Bukijutsu (subtipo de Taijutsu com arma), rank D→S, cada rank correlacionado a nível de personagem (D=4, C=8, B=12, A=16, S=20).
+- **A criação de jutsu customizado já tem um sistema fechado no Manual Shinobi (Cap. 9, p.123-164)**: Passo 1 (tipo + slots de efeito por rank: D=4,C=5,B=6,A=7,S=8) → Passo 2 (pré-requisitos/componentes SM/MC/SC/M/A/FN, alguns dão +slots) → Passo 3 (até 2 categorias: Ofensivo/Defensivo/Controle/Suporte, efeitos consomem slots, tabelas de dado de dano/cura/blindagem por rank) → Passo 4 (custo final de chakra + TdI por rank). Existe também um fluxo de **customizar um jutsu já existente** (Cap 9, p.152-155) com tabela de custo por modificação.
+- As **Anotações do Jiraya** confirmam empiricamente essas fórmulas via ~758 jutsus prontos (regra universal: +3 chakra por rank acima do rank base + 1 melhoria) — vamos usar esse compêndio como dataset de validação/exemplos e possivelmente como lista inicial de jutsus pré-cadastrados.
+- **Estudos de Tsunade** = catálogo de **48 Clãs** (o campo "Sub-Classe" da ficha é na prática um seletor de Clã) + um talento "Linhagem Sanguínea Latente" (compra avulsa de poderes de outro clã por pontos).
+- **Poderes Secretos** = 6 "Mods de Classe" avançados e concedidos por narrativa (Jinchūriki, Senjutsu, Selo Amaldiçoado, Mangekyō, Rinnegan, Rinne-Sharingan), cada um com pools/contadores próprios — feature de fase avançada, não essencial ao MVP.
+
+### Lacuna de dados conhecida
+O livro **"Observações do Orochimaru" (Classes)**, citado como fonte das 11 classes + subclasses completas por nível, **não foi fornecido**. Sem ele não temos a progressão nível-a-nível de nenhuma classe (só a tabela-resumo de Dado de Vida/Chakra/atributo por classe). Isso é bloqueante para o catálogo completo de Classes (tarefa 3.2) — ver opções na Fase 3.
+
+---
+
+## Fase 0 — Fundação técnica (setup)
+1. Criar projeto Next.js + TypeScript (App Router), ESLint/Prettier, Tailwind CSS.
+2. Definir arquitetura de estado: Zustand (ou Context+useReducer) para o personagem ativo; persistência via `localStorage` com hidratação segura (evitar mismatch SSR/CSR).
+3. Modelar o **schema de dados do personagem** em TypeScript (atributos, perícias, chakra, jutsus conhecidos, clã, classe, inventário, condições) com `zod` para validação — este schema é a espinha dorsal de tudo que vem depois.
+4. Definir design system básico: paleta, tipografia, componentes base (Input, Select, Card, Tabs, Modal) — mobile-first, já que ficha de RPG é frequentemente consultada em celular durante a mesa.
+5. Estrutura de rotas: `/` (lista de personagens salvos), `/personagem/[id]` (ficha), `/personagem/[id]/jutsu/novo` (criador de jutsu).
+
+## Fase 1 — Ficha de personagem: núcleo (MVP)
+1. ✅ Tela "Meus Personagens": criar/duplicar/excluir/renomear fichas (lista salva em localStorage).
+2. 🟡 Formulário de atributos (FOR/DES/CON/INT/SAB/CAR) com cálculo automático de modificadores — falta oferecer os 3 métodos de geração (Matriz Padrão 15/14/13/12/11/10, Rolagem 4d6-menor, Compra de Pontos 30pts) como assistente; hoje o valor é digitado livre.
+3. ✅ Bloco de Perícias: as 21 perícias da Ficha 3.1 com atributo correto, cálculo automático de bônus (perícia + proficiência/maestria), suporte a troca de atributo-base.
+4. ✅ Sistema de Proficiência/Maestria: campo por perícia (nenhum/proficiente/maestria 1-3), com aviso quando excede o teto de maestria do nível (1-6→1, 7-11→2, 12+→3).
+5. 🟡 PV e Chakra: campos de atual/máximo/temporário funcionando. Falta calcular o máximo a partir do Dado de Vida/Chakra da classe (depende do catálogo da Fase 2) e a tabela "Vida por Turno"/"Chakra por Turno" da ficha original.
+6. ✅ CA, Iniciativa, Base de Ataque e CD NIN/GEN/TAI calculados automaticamente a partir dos atributos e da proficiência (limite de DES por tipo de armadura fica para a Fase 3, quando existir catálogo de armaduras).
+7. ✅ Testes de resistência à Morte (death saves) com a lógica de 3 sucessos/3 falhas.
+8. ✅ Bônus de Proficiência automático por nível (+3 a +9, tabela de XP→Nível do Manual Shinobi), com barra de XP no header.
+
+## Fase 2 — Identidade do personagem (Clã, Classe, Antecedente)
+1. ✅ Catálogo de **Classes** (as 11 da tabela do Manual Shinobi: Dado de Vida/Chakra, salvaguardas, nível de jutsu) — seletor na Identidade + card de referência com "Usar PV/PC sugeridos" (calcula o máximo pela fórmula 10 + dado + CON, com progressão média por nível).
+2. ✅ Catálogo de **Antecedentes** (os 10 do Manual Shinobi: perícias, kit, recurso único) — seletor + card de referência. A escolha "+1 atributo OU Talento" fica como lembrete de texto (não aplicada automaticamente — depende do catálogo de Talentos, item 4).
+3. ✅ Catálogo de **Clãs** — os 45 clãs jogáveis do "Estudos da Tsunade" (44 nomeados + Sem Clã), cada um com bônus de atributo oficial, Características de Clã por nível (1/3/7/11/15/18) e **Talentos de Clã** (feats opcionais dos marcos de ASI) resumidos. Único clã sem bônus de atributo de clã confirmado no texto-fonte: Senju (`bonusCompleto: false` — o clã só concede atributo via Talentos de Legado). Único clã sem seção de Talentos no livro-fonte: Hatake. Listas individuais de Jutsu exclusivos de cada clã ainda não foram catalogadas (ficam para quando o catálogo de Jutsu for construído, Fase 4). Os catálogos continuam só de referência/seleção: bônus de atributo **não são somados automaticamente** nos atributos (evita duplicar/perder valores ao trocar de clã) — há um aviso destacado na aba Ficha, junto aos atributos, lembrando quanto o clã escolhido concede, e um card com Traços + Talentos na aba Bio.
+4. ⬜ Tela de "Talentos" (feats) — não iniciada. O Manual Shinobi só nomeia as categorias (Geral/Habilidade/Chakra/Ninjutsu/Genjutsu/Taijutsu/Raro/Crítico), sem listar os talentos individuais no relatório que já lemos; precisa de uma leitura dedicada do Cap. 13 antes de catalogar.
+5. ✅ Recursos de progresso: XP (com barra no header), Ryo, TdI, Vontade do Fogo.
+6. **Decisão confirmada**: sem o livro "Observações do Orochimaru" (Classes), a progressão nível-a-nível de features de classe/subclasse não pode ser automatizada — "Características da Classe/Sub-Classe" continua em texto livre (campo Anotações), com automação completa como tarefa futura se conseguirmos essa fonte.
+
+## Fase 3 — Combate e condições
+1. ✅ Painel de Condições Ativas (aba Ficha) com o catálogo completo do Cap. 8 (p.179-186): condições base (Morrendo/Incapacitado/Exaustão/Inconsciente/Petrificado) + 4 categorias graduáveis (Elemental/Físico/Mental/Sensorial), com stepper de graduação (respeitando o teto de cada condição) e resumo do efeito + como remover.
+2. ✅ Catálogo de Equipamentos (Cap. 5, p.34-43): 18 armaduras (Leve/Média/Pesada, com bônus de CA/DES/efeito) e 68 armas (simples/marcial/arremesso/balística/pergaminho, com dano, propriedades e volume). Aba "Itens" (nova, 5ª aba) com seletor de armadura/arma equipada e referência de stats; bônus de armadura aplicado à CA via botão "usar" (mesmo padrão de Clã/Classe).
+3. ✅ Inventário com sistema de Volume/carga: capacidade base = 10 + 2×mod. de Força (fórmula do livro), bônus manual de itens de armazenamento (mochilas/bolsas), barra de volume com aviso de Sobrecarregado quando excede a capacidade. Itens podem ser adicionados do catálogo (armas/armaduras/kits/consumíveis) ou como item customizado.
+4. 🟡 Consumíveis (Cap. 5, p.53-58): 13 pílulas (Ração/Sangue/Chakra/Genjutsu), 4 tiers de Kit de Primeiros Socorros, 13 venenos (Rank D→S com CD e efeito) e 9 tipos de pergaminho catalogados. Faltam etiquetas/explosivos individuais (papéis-bomba, etiquetas de violação) como itens com stat-block próprio — no texto-fonte lido eles aparecem só como produtos fabricáveis via Kit de Demolições, sem uma tabela de preço/dano dedicada na faixa de páginas já lida; catalogados os 14 Kits/Ferramentas de suporte (incluindo Kit de Demolições) e 7 itens de armazenamento.
+5. ✅ Contador de Concentração (aba Ficha): até 2 slots de jutsu (nome + custo de manutenção manual, já que o catálogo de Jutsu ainda não existe — Fase 4), botão "pagar manutenção" que desconta do PC atual, e card de referência com a regra completa (CD de teste ao sofrer dano, condições de quebra).
+
+## Fase 4 — Jutsu: biblioteca e ficha de personagem
+1. Modelar o **schema de Jutsu** (tipo, rank, tempo de conjuração, alcance, duração, componentes, custo, palavras-chave, descrição, escalonamento "em ranks superiores").
+2. Popular um catálogo inicial de jutsus prontos a partir do relatório das Anotações do Jiraya (priorizar Rank D/C, os mais usados em baixo nível) — cartão de jutsu visual (estilo "spell card").
+3. Tela "Jutsus Conhecidos" na ficha: adicionar/remover jutsu do catálogo, ver custo/CD já calculados com os atributos do personagem atual.
+4. Busca/filtro do catálogo por tipo, rank, natureza elemental, palavra-chave.
+
+## Fase 5 — Assistente de Criação de Jutsu (feature central do pedido)
+1. Wizard em 4 passos replicando o Manual Shinobi Cap. 9:
+   - **Passo 1**: tipo (Ninjutsu/Genjutsu/Taijutsu/Bukijutsu) + rank alvo → mostra slots de efeito disponíveis (D=4...S=8).
+   - **Passo 2**: pré-requisitos/palavras-chave (Hijutsu, Médico, Fuinjutsu, Natureza Elemental, Recurso Necessário com bônus de slot) + componentes obrigatórios/opcionais + alcance.
+   - **Passo 3**: escolha de até 2 categorias (Ofensivo/Defensivo/Controle/Suporte) e seleção de efeitos que consomem slots, com os valores de dado por rank já tabelados (dano, cura, blindagem, condições, crítico, múltiplos ataques, selamento etc.) — validação em tempo real do limite de slots.
+   - **Passo 4**: cálculo automático do custo final de chakra e TdI (autodidata/com sensei) pela tabela de rank; nome do jutsu; export do "cartão" final no mesmo formato visual do catálogo (Fase 4).
+2. Validações de regra: rank mínimo por nível de personagem, exigência de Natureza Elemental compatível, limite de 1 Efeito Condicional (a menos que "Efeito Secundário" seja escolhido).
+3. Fluxo separado de **Customizar Jutsu existente** (Cap.9 p.152-155): pegar um jutsu já conhecido, aplicar modificações (trocar componente, alcance, adicionar efeito) com a tabela de custo incremental própria, recalculando rank final pela fórmula dano-médio→rank.
+4. Salvar jutsus customizados no catálogo pessoal do personagem (e opcionalmente compartilhável/exportável como JSON para outros jogadores colarem).
+
+## Fase 6 — Progressão avançada (Poderes Secretos)
+1. Módulo opcional "Mods de Classe": Jinchūriki, Senjutsu, Selo Amaldiçoado, Mangekyō Sharingan, Rinnegan — cada um como um "plugin" de ficha com seus próprios contadores (Chakra Torcido/Sangramento do Selo, Chakra Sábio, Corrupção, Luz/Escuridão, Fadiga Divina etc.), habilitado manualmente pelo jogador/mestre (não por auto-desbloqueio, já que a concessão é 100% narrativa).
+2. Esta fase é a mais isolada do resto do app — pode ser adiada indefinidamente sem bloquear as fases 1-5.
+
+## Fase 7 — Polimento e UX
+1. Modo de impressão / exportação em PDF da ficha (fiel ao layout original em Excel/PDF, para quem prefere imprimir).
+2. Exportar/Importar personagem como JSON (backup manual, já que não há nuvem).
+3. Tema claro/escuro, responsividade completa para celular (uso em mesa).
+4. Atalhos de "modo combate": view compacta só com PV/PC/CA/condições/jutsus prontos para rolar.
+5. Testes com um usuário real (você) jogando uma sessão com a ficha, para caçar atrito de UX antes de fechar v1.
+
+---
+
+## Ordem recomendada de execução
+Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4 → **Fase 5 (criador de jutsu)** → Fase 7 (polimento parcial) → Fase 6 (poderes secretos, sob demanda).
+
+A Fase 5 (criador de jutsu) é o diferencial pedido, mas depende do schema de personagem (Fase 1) e do schema de jutsu (Fase 4) já existirem — por isso vem depois, não antes.
