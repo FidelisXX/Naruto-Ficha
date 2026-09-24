@@ -88,6 +88,6 @@ O livro **"Observações do Orochimaru" (Classes)**, citado como fonte das 11 cl
 ---
 
 ## Ordem recomendada de execução
-Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4 → **Fase 5 (criador de jutsu)** → Fase 7 (polimento parcial) → Fase 6 (poderes secretos, sob demanda).
+Fase 0 → Fase 1 → Fase 2 → Fase 3 → Fase 4 → Fase 5 (criador de jutsu) → **Fase 7 (polimento parcial)** → Fase 6 (poderes secretos, sob demanda).
 
-A Fase 5 (criador de jutsu) é o diferencial pedido, mas depende do schema de personagem (Fase 1) e do schema de jutsu (Fase 4) já existirem — por isso vem depois, não antes.
+A Fase 5 (criador de jutsu) era o diferencial pedido — concluída. Próxima etapa recomendada: Fase 7 (polimento/UX), já que a Fase 6 (poderes secretos) é opcional e isolada do resto do app.
