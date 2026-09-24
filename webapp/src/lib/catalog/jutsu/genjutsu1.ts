@@ -126,7 +126,7 @@ export const genjutsuPart1: JutsuDefinition[] = [
     emNiveisSuperiores: "A proficiência deste jutsu aumenta à medida que você sobe de nível, rolando 1d8 no 5º nível (2d8), 11º nível (3d8), 17º nível (4d8).",
   },
   {
-    key: "luz",
+    key: "luz-genjutsu",
     nome: "Luz",
     tipo: "genjutsu",
     rank: "E",

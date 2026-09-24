@@ -310,7 +310,7 @@ export const fogoJutsu: JutsuDefinition[] = [
     emNiveisSuperiores: "Para cada rank acima de Rank D que você conjurar este jutsu, aumente o custo em 3 chakras e aumente a quantidade de ataques em +1.",
   },
   {
-    key: "faisca",
+    key: "faisca-fogo",
     nome: "Faísca",
     tipo: "ninjutsu",
     rank: "D",

@@ -95,7 +95,7 @@ export const naoElementalJutsu: JutsuDefinition[] = [
     emNiveisSuperiores: "Esse Jutsu aumenta sua efetividade em 1d6 com base em seu nível. (Nível 5 = 2d6, Nível 11 = 3d6, Nível 17 = 4d6).",
   },
   {
-    key: "luz",
+    key: "luz-ninjutsu",
     nome: "Luz",
     tipo: "ninjutsu",
     rank: "E",

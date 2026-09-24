@@ -5,8 +5,12 @@ import { aguaJutsu } from "@/lib/catalog/jutsu/agua";
 import { terraJutsu } from "@/lib/catalog/jutsu/terra";
 import { ventoJutsu } from "@/lib/catalog/jutsu/vento";
 import { bukijutsuJutsu } from "@/lib/catalog/jutsu/bukijutsu";
+import { bukijutsuJutsuParte2 } from "@/lib/catalog/jutsu/bukijutsu2";
 import { genjutsuPart1 } from "@/lib/catalog/jutsu/genjutsu1";
 import { genjutsuPart2 } from "@/lib/catalog/jutsu/genjutsu2";
+import { taijutsuJutsu } from "@/lib/catalog/jutsu/taijutsu";
+import { medicoJutsu } from "@/lib/catalog/jutsu/medico";
+import { relampagoJutsu } from "@/lib/catalog/jutsu/relampago";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -16,10 +20,9 @@ import { genjutsuPart2 } from "@/lib/catalog/jutsu/genjutsu2";
  * Rank C→S e os Jutsus de Invocação ficam para uma leva futura — o livro
  * tem ~758 jutsus ao todo, catalogar tudo de uma vez não seria viável.
  *
- * Status desta leva (ver ROADMAP.md): Não Elemental, Estilo Fogo, Estilo
- * Água, Estilo Terra, Estilo Vento, Bukijutsu (1ª metade) e Genjutsu
- * completos. Ainda pendentes: Ninjutsu Médico, Estilo Relâmpago, Taijutsu
- * (dados já extraídos, aguardando merge) e Bukijutsu (2ª metade).
+ * Status desta leva (ver ROADMAP.md): completa — Ninjutsu (Não Elemental,
+ * Médico, Estilo Terra, Vento, Fogo, Água e Relâmpago), Genjutsu, Taijutsu
+ * e Bukijutsu, todos em Rank E/D.
  */
 export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...naoElementalJutsu,
@@ -28,6 +31,10 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...terraJutsu,
   ...ventoJutsu,
   ...bukijutsuJutsu,
+  ...bukijutsuJutsuParte2,
   ...genjutsuPart1,
   ...genjutsuPart2,
+  ...taijutsuJutsu,
+  ...medicoJutsu,
+  ...relampagoJutsu,
 ];

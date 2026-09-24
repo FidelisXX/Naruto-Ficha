@@ -58,11 +58,11 @@ O livro **"Observações do Orochimaru" (Classes)**, citado como fonte das 11 cl
 4. 🟡 Consumíveis (Cap. 5, p.53-58): 13 pílulas (Ração/Sangue/Chakra/Genjutsu), 4 tiers de Kit de Primeiros Socorros, 13 venenos (Rank D→S com CD e efeito) e 9 tipos de pergaminho catalogados. Faltam etiquetas/explosivos individuais (papéis-bomba, etiquetas de violação) como itens com stat-block próprio — no texto-fonte lido eles aparecem só como produtos fabricáveis via Kit de Demolições, sem uma tabela de preço/dano dedicada na faixa de páginas já lida; catalogados os 14 Kits/Ferramentas de suporte (incluindo Kit de Demolições) e 7 itens de armazenamento.
 5. ✅ Contador de Concentração (aba Ficha): até 2 slots de jutsu (nome + custo de manutenção manual, já que o catálogo de Jutsu ainda não existe — Fase 4), botão "pagar manutenção" que desconta do PC atual, e card de referência com a regra completa (CD de teste ao sofrer dano, condições de quebra).
 
-## Fase 4 — Jutsu: biblioteca e ficha de personagem
-1. Modelar o **schema de Jutsu** (tipo, rank, tempo de conjuração, alcance, duração, componentes, custo, palavras-chave, descrição, escalonamento "em ranks superiores").
-2. Popular um catálogo inicial de jutsus prontos a partir do relatório das Anotações do Jiraya (priorizar Rank D/C, os mais usados em baixo nível) — cartão de jutsu visual (estilo "spell card").
-3. Tela "Jutsus Conhecidos" na ficha: adicionar/remover jutsu do catálogo, ver custo/CD já calculados com os atributos do personagem atual.
-4. Busca/filtro do catálogo por tipo, rank, natureza elemental, palavra-chave.
+## Fase 4 — Jutsu: biblioteca e ficha de personagem ✅
+1. ✅ Schema de Jutsu (`lib/jutsu/types.ts`): tipo (Ninjutsu/Genjutsu/Taijutsu/Bukijutsu), rank (E→S), natureza elemental (para Ninjutsu), tempo de conjuração, alcance, duração, componentes, custo em chakra, palavras-chave, descrição e escalonamento "em ranks superiores" (opcional).
+2. ✅ Catálogo inicial populado a partir das Anotações do Jiraya — **502 jutsus**, cobrindo Rank E e Rank D em todas as categorias: Ninjutsu (Não Elemental, Médico, Estilo Terra/Vento/Fogo/Água/Relâmpago), Genjutsu, Taijutsu e Bukijutsu. Escopo deliberado desta leva: só Rank E/D (nível de entrada, personagens 1-4) — Rank C→S e a seção separada de Jutsus de Invocação (o livro tem ~758 jutsus ao todo) ficam para uma leva futura, catalogar tudo de uma vez não seria viável. Cartão de jutsu visual (`JutsuCard.tsx`, estilo "spell card") com rank, custo, ataque/CD calculados e palavras-chave. Dados extraídos via OCR de PDF em duas colunas — algumas dezenas de entradas têm comentários `// NOTE:` inline sinalizando incertezas de OCR (nomes truncados/ambíguos, atribuição de coluna, custo "Especial" sem valor fixo) preservadas ao invés de adivinhadas.
+3. ✅ Aba "Jutsu" na ficha (`JutsuBrowser.tsx`): card "Jutsus Conhecidos" (toggle direto do catálogo, com custo/CD já calculados a partir dos atributos do personagem atual — Inteligência para Ninjutsu, Sabedoria para Genjutsu, Força para Taijutsu/Bukijutsu) e card "Catálogo de Jutsu" com a lista completa.
+4. ✅ Busca por texto (nome/palavra-chave/descrição) e filtros por tipo, rank e natureza elemental, com contagem de resultados.
 
 ## Fase 5 — Assistente de Criação de Jutsu (feature central do pedido)
 1. Wizard em 4 passos replicando o Manual Shinobi Cap. 9:
