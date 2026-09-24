@@ -69,11 +69,18 @@ export function JutsuBrowser({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2">
           <CardTitle className="text-muted-foreground">Jutsus Conhecidos</CardTitle>
-          <Link href={`/personagem/${character.id}/jutsu/novo`}>
-            <Button variant="secondary" size="sm">
-              Criar jutsu
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href={`/personagem/${character.id}/jutsu/customizar`}>
+              <Button variant="secondary" size="sm">
+                Personalizar jutsu
+              </Button>
+            </Link>
+            <Link href={`/personagem/${character.id}/jutsu/novo`}>
+              <Button variant="secondary" size="sm">
+                Criar jutsu
+              </Button>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           {known.length === 0 && character.customJutsu.length === 0 ? (
