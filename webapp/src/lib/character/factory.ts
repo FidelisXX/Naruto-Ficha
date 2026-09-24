@@ -65,6 +65,7 @@ export function createBlankCharacter(nome = "Novo Personagem"): Character {
     },
     equipment: {},
     knownJutsu: [],
+    customJutsu: [],
     notes: "",
   };
 }
@@ -95,6 +96,7 @@ export function normalizeCharacter(raw: Character): Character {
     },
     equipment: { ...blank.equipment, ...raw.equipment },
     knownJutsu: raw.knownJutsu ?? blank.knownJutsu,
+    customJutsu: raw.customJutsu ?? blank.customJutsu,
   };
 }
 

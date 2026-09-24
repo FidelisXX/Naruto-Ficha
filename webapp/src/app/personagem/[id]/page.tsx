@@ -22,7 +22,6 @@ import { ProgressionPanel } from "@/components/character/ProgressionPanel";
 import { SkillsTable } from "@/components/character/SkillsTable";
 import { JutsuBrowser } from "@/components/character/JutsuBrowser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { TabBar, type TabBarItem } from "@/components/ui/TabBar";
 
 type TabKey = "ficha" | "identidade" | "itens" | "pericias" | "jutsu";
@@ -119,23 +118,7 @@ export default function CharacterSheetPage() {
 
         {tab === "pericias" && <SkillsTable character={character} onUpdate={onUpdate} />}
 
-        {tab === "jutsu" && (
-          <>
-            <JutsuBrowser character={character} onUpdate={onUpdate} />
-            <Card>
-              <CardContent className="flex items-center justify-between gap-3 py-3">
-                <p className="text-xs text-muted-foreground">
-                  Assistente de criação de jutsu customizado (Fase 5) ainda não foi construído.
-                </p>
-                <Link href={`/personagem/${id}/jutsu/novo`}>
-                  <Button variant="secondary" size="sm">
-                    Ver placeholder
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </>
-        )}
+        {tab === "jutsu" && <JutsuBrowser character={character} onUpdate={onUpdate} />}
       </main>
 
       <TabBar items={TABS} active={tab} onChange={setTab} />

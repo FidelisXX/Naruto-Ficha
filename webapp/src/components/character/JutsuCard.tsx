@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import type { Character } from "@/lib/character/schema";
 import type { JutsuDefinition } from "@/lib/jutsu/types";
 import { JUTSU_NATUREZA_LABELS, JUTSU_TIPO_LABELS } from "@/lib/jutsu/types";
@@ -35,11 +35,14 @@ export function JutsuCard({
   character,
   isKnown,
   onToggleKnown,
+  onDelete,
 }: {
   jutsu: JutsuDefinition;
   character: Character;
   isKnown: boolean;
-  onToggleKnown: () => void;
+  onToggleKnown?: () => void;
+  /** Quando presente, renderiza um botão de excluir no lugar do toggle de "conhecido" (jutsu customizado). */
+  onDelete?: () => void;
 }) {
   const proficiencyBonus = proficiencyBonusForLevel(character.progression.nivel);
   const attribute = TIPO_ATTRIBUTE[jutsu.tipo];
@@ -61,9 +64,15 @@ export function JutsuCard({
           >
             Rank {jutsu.rank}
           </span>
-          <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onToggleKnown}>
-            {isKnown ? <Minus size={14} /> : <Plus size={14} />}
-          </Button>
+          {onDelete ? (
+            <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onDelete}>
+              <Trash2 size={14} />
+            </Button>
+          ) : (
+            <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onToggleKnown}>
+              {isKnown ? <Minus size={14} /> : <Plus size={14} />}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -94,7 +103,7 @@ export function JutsuCard({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">{jutsu.descricao}</p>
+      <p className="text-xs text-muted-foreground whitespace-pre-line">{jutsu.descricao}</p>
       {jutsu.emNiveisSuperiores && (
         <p className="text-[11px] text-primary">Em Níveis Superiores: {jutsu.emNiveisSuperiores}</p>
       )}

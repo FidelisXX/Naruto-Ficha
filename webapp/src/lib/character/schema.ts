@@ -1,6 +1,28 @@
 import { z } from "zod";
 import { ATTRIBUTE_KEYS, SKILL_DEFINITIONS } from "@/lib/rules";
 
+/**
+ * Jutsu customizado salvo pelo jogador (Fase 5 — Assistente de Criação de
+ * Jutsu). Mesmo formato de `JutsuDefinition` (lib/jutsu/types.ts), mas
+ * validado via Zod por fazer parte do estado persistido do personagem —
+ * diferente dos catálogos prontos (Fase 4), que são dados estáticos do app.
+ */
+export const customJutsuSchema = z.object({
+  key: z.string(),
+  nome: z.string(),
+  tipo: z.enum(["ninjutsu", "genjutsu", "taijutsu", "bukijutsu"]),
+  rank: z.enum(["E", "D", "C", "B", "A", "S"]),
+  natureza: z.enum(["nao-elemental", "medico", "terra", "vento", "fogo", "agua", "relampago"]).optional(),
+  tempoConjuracao: z.string(),
+  alcance: z.string(),
+  duracao: z.string(),
+  componentes: z.array(z.string()),
+  custoChakra: z.number().int().min(0),
+  palavrasChave: z.array(z.string()),
+  descricao: z.string(),
+  emNiveisSuperiores: z.string().optional(),
+});
+
 export const attributeScoresSchema = z.object(
   Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, z.number().int().min(1).max(30)])) as Record<
     (typeof ATTRIBUTE_KEYS)[number],
@@ -143,10 +165,13 @@ export const characterSchema = z.object({
   equipment: equipmentRefsSchema,
   /** Chaves de JutsuDefinition (catalog/jutsu) que o personagem conhece. */
   knownJutsu: z.array(z.string()),
+  /** Jutsus criados/personalizados pelo jogador (Fase 5), sempre "conhecidos". */
+  customJutsu: z.array(customJutsuSchema),
   notes: z.string(),
 });
 
 export type Character = z.infer<typeof characterSchema>;
+export type CustomJutsu = z.infer<typeof customJutsuSchema>;
 export type CharacterIdentity = z.infer<typeof characterIdentitySchema>;
 export type CharacterProgression = z.infer<typeof characterProgressionSchema>;
 export type CharacterVitals = z.infer<typeof characterVitalsSchema>;

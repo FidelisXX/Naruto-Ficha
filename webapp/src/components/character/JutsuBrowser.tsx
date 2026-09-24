@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { Character } from "@/lib/character/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { FieldLabel, SelectField, TextField } from "@/components/ui/Field";
 import { JutsuCard } from "@/components/character/JutsuCard";
 import { JUTSU_CATALOG } from "@/lib/catalog/jutsu";
@@ -36,6 +38,13 @@ export function JutsuBrowser({
     }));
   }
 
+  function deleteCustomJutsu(key: string) {
+    onUpdate((c) => ({
+      ...c,
+      customJutsu: c.customJutsu.filter((j) => j.key !== key),
+    }));
+  }
+
   const known = useMemo(
     () => character.knownJutsu.map((key) => JUTSU_CATALOG.find((j) => j.key === key)).filter(Boolean),
     [character.knownJutsu]
@@ -58,24 +67,40 @@ export function JutsuBrowser({
   return (
     <div className="flex flex-col gap-3">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between gap-2">
           <CardTitle className="text-muted-foreground">Jutsus Conhecidos</CardTitle>
+          <Link href={`/personagem/${character.id}/jutsu/novo`}>
+            <Button variant="secondary" size="sm">
+              Criar jutsu
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          {known.length === 0 ? (
+          {known.length === 0 && character.customJutsu.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              Nenhum jutsu conhecido ainda — adicione a partir do catálogo abaixo.
+              Nenhum jutsu conhecido ainda — adicione a partir do catálogo abaixo ou crie o seu próprio.
             </p>
           ) : (
-            known.map((j) => (
-              <JutsuCard
-                key={j.key}
-                jutsu={j}
-                character={character}
-                isKnown
-                onToggleKnown={() => toggleKnown(j.key)}
-              />
-            ))
+            <>
+              {character.customJutsu.map((j) => (
+                <JutsuCard
+                  key={j.key}
+                  jutsu={j}
+                  character={character}
+                  isKnown
+                  onDelete={() => deleteCustomJutsu(j.key)}
+                />
+              ))}
+              {known.map((j) => (
+                <JutsuCard
+                  key={j.key}
+                  jutsu={j}
+                  character={character}
+                  isKnown
+                  onToggleKnown={() => toggleKnown(j.key)}
+                />
+              ))}
+            </>
           )}
         </CardContent>
       </Card>
