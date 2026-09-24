@@ -1,7 +1,14 @@
+import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import type { Character } from "@/lib/character/schema";
+import { characterSchema, type Character } from "@/lib/character/schema";
 import { createBlankCharacter, duplicateCharacter, normalizeCharacter } from "@/lib/character/factory";
+
+export interface ImportCharacterResult {
+  success: boolean;
+  error?: string;
+  character?: Character;
+}
 
 interface CharacterStoreState {
   characters: Record<string, Character>;
@@ -10,6 +17,14 @@ interface CharacterStoreState {
   duplicateCharacter: (id: string) => Character | undefined;
   removeCharacter: (id: string) => void;
   updateCharacter: (id: string, updater: (character: Character) => Character) => void;
+  /**
+   * Importa uma ficha exportada como JSON (Fase 7). Normaliza campos que
+   * possam faltar (ficha exportada de uma versão anterior do app) e valida
+   * a forma final com o schema Zod antes de aceitar — nunca confia cegamente
+   * no arquivo. Sempre recebe um novo id, para nunca sobrescrever uma ficha
+   * existente por coincidência de id.
+   */
+  importCharacter: (data: unknown) => ImportCharacterResult;
   setHasHydrated: (value: boolean) => void;
 }
 
@@ -68,6 +83,19 @@ export const useCharacterStore = create<CharacterStoreState>()(
           const updated = { ...updater(current), updatedAt: new Date().toISOString() };
           return { characters: { ...state.characters, [id]: updated } };
         });
+      },
+      importCharacter: (data) => {
+        if (typeof data !== "object" || data === null) {
+          return { success: false, error: "Arquivo inválido: esperado um objeto de personagem." };
+        }
+        const now = new Date().toISOString();
+        const normalized = normalizeCharacter({ ...(data as Character), id: nanoid(), createdAt: now, updatedAt: now });
+        const parsed = characterSchema.safeParse(normalized);
+        if (!parsed.success) {
+          return { success: false, error: "Arquivo inválido: não corresponde ao formato de uma ficha de personagem." };
+        }
+        set((state) => ({ characters: { ...state.characters, [parsed.data.id]: parsed.data } }));
+        return { success: true, character: parsed.data };
       },
       setHasHydrated: (value) => set({ hasHydrated: value }),
     }),

@@ -78,12 +78,12 @@ O livro **"Observações do Orochimaru" (Classes)**, citado como fonte das 11 cl
 1. Módulo opcional "Mods de Classe": Jinchūriki, Senjutsu, Selo Amaldiçoado, Mangekyō Sharingan, Rinnegan — cada um como um "plugin" de ficha com seus próprios contadores (Chakra Torcido/Sangramento do Selo, Chakra Sábio, Corrupção, Luz/Escuridão, Fadiga Divina etc.), habilitado manualmente pelo jogador/mestre (não por auto-desbloqueio, já que a concessão é 100% narrativa).
 2. Esta fase é a mais isolada do resto do app — pode ser adiada indefinidamente sem bloquear as fases 1-5.
 
-## Fase 7 — Polimento e UX
-1. Modo de impressão / exportação em PDF da ficha (fiel ao layout original em Excel/PDF, para quem prefere imprimir).
-2. Exportar/Importar personagem como JSON (backup manual, já que não há nuvem).
-3. Tema claro/escuro, responsividade completa para celular (uso em mesa).
-4. Atalhos de "modo combate": view compacta só com PV/PC/CA/condições/jutsus prontos para rolar.
-5. Testes com um usuário real (você) jogando uma sessão com a ficha, para caçar atrito de UX antes de fechar v1.
+## Fase 7 — Polimento e UX 🟡
+1. ✅ Modo de impressão: rota dedicada `/personagem/[id]/imprimir` que compila identidade, atributos, combate, condições ativas, perícias, inventário, jutsus conhecidos e anotações em uma única página, com cores neutras fixas (preto/branco, independente do tema claro/escuro) e `@media print` escondendo a barra de ação. Escopo deliberado: não é uma recriação pixel-perfect do layout original em Excel/PDF (não há um arquivo de design de referência no repo para isso) — é uma folha de impressão limpa e completa via `window.print()`, sem depender de nenhuma lib de PDF.
+2. ✅ Exportar/Importar personagem como JSON: botão de exportar por ficha (download individual) e "Exportar todas" (backup em lote) na tela inicial; botão "Importar" aceita tanto um arquivo de uma ficha quanto um array de várias, valida via `characterSchema` (Zod) e roda `normalizeCharacter` antes de aceitar, sempre com um id novo (nunca sobrescreve uma ficha existente).
+3. ✅ Tema claro/escuro: paleta clara completa em `globals.css` (`[data-theme="light"]`, mesmas 15 variáveis CSS da paleta escura), alternado por um botão (`ThemeToggle`, com `useSyncExternalStore` para evitar mismatch de hidratação) presente na tela inicial e no cabeçalho da ficha; preferência persistida em `localStorage` e aplicada antes da hidratação via script inline (evita flash do tema errado). 🟡 Responsividade: `AttributesGrid` ganhou breakpoints (2→3→6 colunas) e `SkillsTable` ganhou scroll horizontal de segurança; uma varredura completa de todos os componentes (ex: grids fixos do `CombatStatsPanel`) não foi feita — funcionam em celular hoje, mas não foram otimizados para desktop além do já existente.
+4. ✅ "Modo Combate": 6ª aba na ficha (`CombatModePanel`) empilhando PV/PC, CA/Iniciativa/Ataque, condições ativas e os jutsus conhecidos em formato compacto (nome, rank, custo, ataque/CD já calculados, sem descrição/filtros) — mesmos painéis e funções de `lib/rules.ts` já usados na aba Ficha, sem lógica de regra nova.
+5. ⬜ Testes com um usuário real (você) jogando uma sessão com a ficha, para caçar atrito de UX antes de fechar v1 — não é uma tarefa de engenharia, depende de uma sessão de jogo real.
 
 ---
 

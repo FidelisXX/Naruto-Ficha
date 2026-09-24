@@ -18,7 +18,7 @@ export function AttributesGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {ATTRIBUTE_KEYS.map((key) => {
         const score = character.attributes[key];
         const modifier = abilityModifier(score);

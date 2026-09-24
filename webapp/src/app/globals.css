@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 /*
- * Tema escuro "shinobi" — fixo por enquanto (sem alternância clara/escura;
- * isso fica pra Fase 7 do roadmap). Paleta: fundo quase preto, cards em
- * grafite, destaque em dourado (âmbar), com cores semânticas por recurso
- * (PV vermelho, Chakra azul, sucesso verde).
+ * Tema "shinobi" — escuro por padrão, com uma variante clara (Fase 7,
+ * alternada via [data-theme="light"] no <html>, ver ThemeToggle.tsx e
+ * lib/theme.ts). Paleta escura: fundo quase preto, cards em grafite,
+ * destaque em dourado (âmbar); paleta clara: fundo papel, cards brancos,
+ * mesmo dourado (mais escuro para contraste). Cores semânticas por recurso
+ * (PV vermelho, Chakra azul, sucesso verde) mantidas em ambos os temas.
  */
 :root {
   --background: #0b0a0f;
@@ -25,6 +27,27 @@
   --hp: #ef4444;
   --chakra: #3ea1ff;
   --success: #34d399;
+}
+
+:root[data-theme="light"] {
+  --background: #f7f4ec;
+  --foreground: #201c28;
+
+  --surface: #ffffff;
+  --surface-2: #efe9d9;
+  --surface-foreground: #201c28;
+  --border: #ddd4bd;
+  --muted: #ece5d2;
+  --muted-foreground: #6b6470;
+
+  --primary: #a9761a;
+  --primary-foreground: #ffffff;
+  --accent: #c73a2c;
+  --accent-foreground: #ffffff;
+
+  --hp: #d92d2d;
+  --chakra: #1d6fd1;
+  --success: #14804a;
 }
 
 @theme inline {
@@ -63,4 +86,17 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* Modo de impressão (Fase 7) — usado por /personagem/[id]/imprimir, que já
+   é construída com cores neutras fixas (branco/preto) em vez dos tokens de
+   tema, então essa folha só precisa esconder a barra de ação e evitar que
+   o navegador acrescente cabeçalho/rodapé/margens extras. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  @page {
+    margin: 12mm;
+  }
 }

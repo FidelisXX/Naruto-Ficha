@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import type { Character } from "@/lib/character/schema";
 import { Stepper } from "@/components/ui/Stepper";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { formatModifier, proficiencyBonusForLevel, xpProgressForLevel } from "@/lib/rules";
 
 export function CharacterHeader({
@@ -28,9 +29,20 @@ export function CharacterHeader({
           >
             <ArrowLeft size={18} />
           </Link>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground bg-surface-2 px-2.5 py-1 rounded-full">
-            PJ
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground bg-surface-2 px-2.5 py-1 rounded-full">
+              PJ
+            </span>
+            <Link
+              href={`/personagem/${character.id}/imprimir`}
+              aria-label="Imprimir ficha"
+              title="Imprimir ficha"
+              className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Printer size={16} />
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className="flex items-start justify-between gap-4">

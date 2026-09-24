@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Backpack, BookUser, Flame, ListChecks, User } from "lucide-react";
+import { Backpack, BookUser, Flame, ListChecks, Swords, User } from "lucide-react";
 import { useCharacterStore } from "@/store/characterStore";
 import type { Character } from "@/lib/character/schema";
 import { CharacterHeader } from "@/components/character/CharacterHeader";
@@ -21,10 +21,11 @@ import { CatalogInfoPanel } from "@/components/character/CatalogInfoPanel";
 import { ProgressionPanel } from "@/components/character/ProgressionPanel";
 import { SkillsTable } from "@/components/character/SkillsTable";
 import { JutsuBrowser } from "@/components/character/JutsuBrowser";
+import { CombatModePanel } from "@/components/character/CombatModePanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { TabBar, type TabBarItem } from "@/components/ui/TabBar";
 
-type TabKey = "ficha" | "identidade" | "itens" | "pericias" | "jutsu";
+type TabKey = "ficha" | "identidade" | "itens" | "pericias" | "jutsu" | "combate";
 
 const TABS: TabBarItem<TabKey>[] = [
   { key: "ficha", label: "Ficha", icon: User },
@@ -32,6 +33,7 @@ const TABS: TabBarItem<TabKey>[] = [
   { key: "itens", label: "Itens", icon: Backpack },
   { key: "pericias", label: "Perícias", icon: ListChecks },
   { key: "jutsu", label: "Jutsu", icon: Flame },
+  { key: "combate", label: "Combate", icon: Swords },
 ];
 
 export default function CharacterSheetPage() {
@@ -119,6 +121,8 @@ export default function CharacterSheetPage() {
         {tab === "pericias" && <SkillsTable character={character} onUpdate={onUpdate} />}
 
         {tab === "jutsu" && <JutsuBrowser character={character} onUpdate={onUpdate} />}
+
+        {tab === "combate" && <CombatModePanel character={character} onUpdate={onUpdate} />}
       </main>
 
       <TabBar items={TABS} active={tab} onChange={setTab} />

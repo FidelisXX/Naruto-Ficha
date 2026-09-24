@@ -71,8 +71,8 @@ export function SkillsTable({
           Teto de Maestria no nível atual: {maxMastery === 0 ? "nenhuma" : `nível ${maxMastery}`}.
         </p>
       </CardHeader>
-      <CardContent className="p-0 pt-3">
-        <table className="w-full text-sm">
+      <CardContent className="p-0 pt-3 overflow-x-auto">
+        <table className="w-full min-w-[420px] text-sm">
           <thead>
             <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground border-b border-border">
               <th className="px-4 py-2 font-medium">Perícia</th>

@@ -36,6 +36,7 @@ export function JutsuCard({
   isKnown,
   onToggleKnown,
   onDelete,
+  compact,
 }: {
   jutsu: JutsuDefinition;
   character: Character;
@@ -43,6 +44,8 @@ export function JutsuCard({
   onToggleKnown?: () => void;
   /** Quando presente, renderiza um botão de excluir no lugar do toggle de "conhecido" (jutsu customizado). */
   onDelete?: () => void;
+  /** Modo compacto (Modo Combate): esconde descrição/palavras-chave e o botão de ação, só o essencial pra rolar. */
+  compact?: boolean;
 }) {
   const proficiencyBonus = proficiencyBonusForLevel(character.progression.nivel);
   const attribute = TIPO_ATTRIBUTE[jutsu.tipo];
@@ -64,24 +67,27 @@ export function JutsuCard({
           >
             Rank {jutsu.rank}
           </span>
-          {onDelete ? (
-            <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onDelete}>
-              <Trash2 size={14} />
-            </Button>
-          ) : (
-            <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onToggleKnown}>
-              {isKnown ? <Minus size={14} /> : <Plus size={14} />}
-            </Button>
-          )}
+          {!compact &&
+            (onDelete ? (
+              <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onDelete}>
+                <Trash2 size={14} />
+              </Button>
+            ) : (
+              <Button variant="secondary" size="sm" className="px-2 py-1" onClick={onToggleKnown}>
+                {isKnown ? <Minus size={14} /> : <Plus size={14} />}
+              </Button>
+            ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-        <p>Conjuração: {jutsu.tempoConjuracao}</p>
-        <p>Alcance: {jutsu.alcance}</p>
-        <p>Duração: {jutsu.duracao}</p>
-        <p>Componentes: {jutsu.componentes.join(", ") || "—"}</p>
-      </div>
+      {!compact && (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+          <p>Conjuração: {jutsu.tempoConjuracao}</p>
+          <p>Alcance: {jutsu.alcance}</p>
+          <p>Duração: {jutsu.duracao}</p>
+          <p>Componentes: {jutsu.componentes.join(", ") || "—"}</p>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 text-xs">
         <span className="text-chakra font-semibold">{jutsu.custoChakra} Chakra</span>
@@ -90,7 +96,7 @@ export function JutsuCard({
         </span>
       </div>
 
-      {jutsu.palavrasChave.length > 0 && (
+      {!compact && jutsu.palavrasChave.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {jutsu.palavrasChave.map((kw) => (
             <span
@@ -103,8 +109,8 @@ export function JutsuCard({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground whitespace-pre-line">{jutsu.descricao}</p>
-      {jutsu.emNiveisSuperiores && (
+      {!compact && <p className="text-xs text-muted-foreground whitespace-pre-line">{jutsu.descricao}</p>}
+      {!compact && jutsu.emNiveisSuperiores && (
         <p className="text-[11px] text-primary">Em Níveis Superiores: {jutsu.emNiveisSuperiores}</p>
       )}
     </div>
