@@ -14,6 +14,13 @@ interface CharacterStoreState {
   characters: Record<string, Character>;
   hasHydrated: boolean;
   createCharacter: (nome?: string) => Character;
+  /**
+   * Insere um personagem já montado (pelo Assistente de Criação Guiada,
+   * ver lib/characterCreation) no lugar de um em branco. Passa por
+   * `normalizeCharacter` por segurança (mesma garantia de `importCharacter`),
+   * já que o assistente monta o objeto por fora do fluxo normal de `onUpdate`.
+   */
+  createCharacterFrom: (character: Character) => Character;
   duplicateCharacter: (id: string) => Character | undefined;
   removeCharacter: (id: string) => void;
   updateCharacter: (id: string, updater: (character: Character) => Character) => void;
@@ -59,6 +66,13 @@ export const useCharacterStore = create<CharacterStoreState>()(
           characters: { ...state.characters, [character.id]: character },
         }));
         return character;
+      },
+      createCharacterFrom: (character) => {
+        const normalized = normalizeCharacter(character);
+        set((state) => ({
+          characters: { ...state.characters, [normalized.id]: normalized },
+        }));
+        return normalized;
       },
       duplicateCharacter: (id) => {
         const original = get().characters[id];

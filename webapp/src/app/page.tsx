@@ -13,7 +13,6 @@ export default function CharacterListPage() {
   const router = useRouter();
   const hasHydrated = useCharacterStore((state) => state.hasHydrated);
   const characters = useCharacterStore((state) => state.characters);
-  const createCharacter = useCharacterStore((state) => state.createCharacter);
   const duplicateCharacter = useCharacterStore((state) => state.duplicateCharacter);
   const removeCharacter = useCharacterStore((state) => state.removeCharacter);
   const importCharacter = useCharacterStore((state) => state.importCharacter);
@@ -25,8 +24,7 @@ export default function CharacterListPage() {
   );
 
   function handleCreate() {
-    const character = createCharacter();
-    router.push(`/personagem/${character.id}`);
+    router.push("/personagem/novo");
   }
 
   function handleDuplicate(id: string) {

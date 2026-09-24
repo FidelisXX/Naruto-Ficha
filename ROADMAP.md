@@ -35,13 +35,23 @@ O livro **"Observações do Orochimaru" (Classes)**, citado como fonte das 11 cl
 
 ## Fase 1 — Ficha de personagem: núcleo (MVP)
 1. ✅ Tela "Meus Personagens": criar/duplicar/excluir/renomear fichas (lista salva em localStorage).
-2. 🟡 Formulário de atributos (FOR/DES/CON/INT/SAB/CAR) com cálculo automático de modificadores — falta oferecer os 3 métodos de geração (Matriz Padrão 15/14/13/12/11/10, Rolagem 4d6-menor, Compra de Pontos 30pts) como assistente; hoje o valor é digitado livre.
+2. ✅ Formulário de atributos (FOR/DES/CON/INT/SAB/CAR) com cálculo automático de modificadores. Os 3 métodos de geração (Matriz Padrão, Rolagem 4d6-menor, Compra de Pontos 30pts) viraram parte do Assistente de Criação Guiada — ver item 9.
 3. ✅ Bloco de Perícias: as 21 perícias da Ficha 3.1 com atributo correto, cálculo automático de bônus (perícia + proficiência/maestria), suporte a troca de atributo-base.
 4. ✅ Sistema de Proficiência/Maestria: campo por perícia (nenhum/proficiente/maestria 1-3), com aviso quando excede o teto de maestria do nível (1-6→1, 7-11→2, 12+→3).
 5. 🟡 PV e Chakra: campos de atual/máximo/temporário funcionando. Falta calcular o máximo a partir do Dado de Vida/Chakra da classe (depende do catálogo da Fase 2) e a tabela "Vida por Turno"/"Chakra por Turno" da ficha original.
 6. ✅ CA, Iniciativa, Base de Ataque e CD NIN/GEN/TAI calculados automaticamente a partir dos atributos e da proficiência (limite de DES por tipo de armadura fica para a Fase 3, quando existir catálogo de armaduras).
 7. ✅ Testes de resistência à Morte (death saves) com a lógica de 3 sucessos/3 falhas.
 8. ✅ Bônus de Proficiência automático por nível (+3 a +9, tabela de XP→Nível do Manual Shinobi), com barra de XP no header.
+9. ✅ **Assistente de Criação Guiada** (`/personagem/novo`, substitui a antiga criação em branco): wizard de 7 passos replicando a ordem exata do Manual Shinobi, "Personagem Passo a Passo" (Cap. 1, p.8-14):
+   - **Passo 1 — Clã**: os 45 clãs (busca por nome), mostrando bônus de atributo e o traço de nível 1.
+   - **Passo 2 — Classe**: as 11 classes, com Dado de Vida/Chakra, nível de Jutsu e salvaguardas.
+   - **Passo 3 — Atributos**: os 3 métodos do livro (Matriz Padrão 15/14/13/12/11/10 — atribuição por dropdown a partir do pool restante; Rolagem 4d6-descarta-o-menor com botão de rolar; Compra de Pontos, 30 pontos, tabela de custo 8=0…15=9, com o total restante sempre visível e o Stepper bloqueando gastar além do orçamento) — e, pela primeira vez no app, **aplica automaticamente** o bônus de atributo do clã (inclusive cláusulas "+N à escolha entre X ou Y", com um parser de texto livre e um seletor por cláusula — `lib/characterCreation/clanBonusParsing.ts`), já que é o momento único de criação (edições de clã feitas depois continuam manuais, como sempre).
+   - **Passo 4 — Identidade & Antecedente**: nome/vila/equipe/ambição + os 10 antecedentes, com extração best-effort das 2 perícias concedidas a partir do texto livre de `pericias` (`lib/characterCreation/backgroundSkillParsing.ts`) apresentadas como checkboxes limitadas a 2.
+   - **Passo 5 — Equipamento** (opcional): armadura e arma principal do catálogo, aplicadas à CA e ao inventário.
+   - **Passo 6 — Jutsu Inicial** (opcional): jutsus de Rank E (o rank de entrada) com busca por nome.
+   - **Passo 7 — Revisão**: resumo completo (atributos finais com bônus de clã, PV/PC calculados pela fórmula de nível 1 do livro, equipamento, perícias, contagem de jutsu) antes de criar.
+   
+   Corrigido no processo: um bug real de conflito de classes Tailwind (`w-full` da base de `Field.tsx` vencendo overrides como `w-14`/`w-24`, que fazia o nome de itens de inventário colapsar para largura 0) — resolvido adicionando `tailwind-merge` e um helper `cn()`, usado agora em todos os componentes de campo compartilhados.
 
 ## Fase 2 — Identidade do personagem (Clã, Classe, Antecedente)
 1. ✅ Catálogo de **Classes** (as 11 da tabela do Manual Shinobi: Dado de Vida/Chakra, salvaguardas, nível de jutsu) — seletor na Identidade + card de referência com "Usar PV/PC sugeridos" (calcula o máximo pela fórmula 10 + dado + CON, com progressão média por nível).

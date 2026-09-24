@@ -5,8 +5,12 @@ import { ATTRIBUTE_LABELS, formatModifier } from "@/lib/rules";
 
 /**
  * Aviso compacto mostrado junto aos atributos, lembrando quanto o clã
- * selecionado concede — os valores não são somados automaticamente (ver
- * CatalogInfoPanel), então o jogador precisa aplicar manualmente aqui.
+ * selecionado concede. Editar Clã/Classe/Antecedente depois de criado o
+ * personagem continua manual (ver CatalogInfoPanel) — mas um personagem
+ * feito pelo Assistente de Criação Guiada (lib/characterCreation) já sai
+ * com esse bônus somado nos atributos, então o texto é uma checagem
+ * ("confira se já está refletido"), não uma instrução de "some agora",
+ * para não sugerir aplicar o bônus 2x.
  */
 export function ClanAttributeNotice({ character }: { character: Character }) {
   const clan = CLAN_CATALOG.find((c) => c.nome === character.identity.cla);
@@ -37,8 +41,9 @@ export function ClanAttributeNotice({ character }: { character: Character }) {
       <Sparkles size={14} className="shrink-0" />
       <span>
         Clã <strong>{clan.nome}</strong> concede {bonusText}
-        {clan.atributoEscolha ? `${bonusText ? ", " : ""}${clan.atributoEscolha}` : ""}. Some
-        manualmente aos valores abaixo.
+        {clan.atributoEscolha ? `${bonusText ? ", " : ""}${clan.atributoEscolha}` : ""}. Confira se
+        esse bônus já está refletido nos valores abaixo (o Assistente de Criação já aplica
+        automaticamente; ao trocar de clã depois, some/ajuste manualmente).
       </span>
     </div>
   );
