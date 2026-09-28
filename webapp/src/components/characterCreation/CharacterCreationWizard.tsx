@@ -25,11 +25,14 @@ import {
 } from "@/lib/characterCreation/attributeGeneration";
 import { parseAttributeChoice } from "@/lib/characterCreation/clanBonusParsing";
 import { extractBackgroundSkillCandidates } from "@/lib/characterCreation/backgroundSkillParsing";
+import { TALENT_CATALOG } from "@/lib/catalog/talents";
+import type { TalentCategory } from "@/lib/talents/types";
 import {
   assembleCharacter,
   clanAttributeBonus,
   finalAttributeScore,
   getBackground,
+  getBackgroundTalent,
   getClan,
   getClass,
   pointBuyRemaining,
@@ -513,12 +516,115 @@ function StepIdentity({ draft, updateDraft }: { draft: CreationDraft; updateDraf
           </div>
         )}
 
-        <p className="text-[11px] text-primary">
-          Lembrete: cada antecedente também concede +1 em um atributo OU um Talento, à sua escolha — aplique manualmente
-          depois de criar o personagem (o catálogo de Talentos ainda não existe no app).
-        </p>
+        <div>
+          <FieldLabel>Bônus do Antecedente</FieldLabel>
+          <p className="text-[11px] text-muted-foreground mb-1.5">
+            Todo antecedente concede +1 em um atributo, à sua escolha, ou um Talento (Manual Shinobi, Cap. 13).
+          </p>
+          <div className="flex gap-3 mb-2">
+            <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+              <input
+                type="radio"
+                name="bonus-antecedente"
+                checked={draft.backgroundBonusChoice === "atributo"}
+                onChange={() => updateDraft({ backgroundBonusChoice: "atributo", backgroundTalentKey: null })}
+              />
+              +1 em um atributo
+            </label>
+            <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+              <input
+                type="radio"
+                name="bonus-antecedente"
+                checked={draft.backgroundBonusChoice === "talento"}
+                onChange={() => updateDraft({ backgroundBonusChoice: "talento", backgroundBonusAttribute: null })}
+              />
+              Um Talento
+            </label>
+          </div>
+
+          {draft.backgroundBonusChoice === "atributo" && (
+            <SelectField
+              value={draft.backgroundBonusAttribute ?? ""}
+              onChange={(e) => updateDraft({ backgroundBonusAttribute: (e.target.value || null) as AttributeKey | null })}
+            >
+              <option value="">Selecione um atributo</option>
+              {ATTRIBUTE_KEYS.map((key) => (
+                <option key={key} value={key}>
+                  {ATTRIBUTE_LABELS[key]}
+                </option>
+              ))}
+            </SelectField>
+          )}
+
+          {draft.backgroundBonusChoice === "talento" && <TalentPicker draft={draft} updateDraft={updateDraft} />}
+        </div>
       </CardContent>
     </Card>
+  );
+}
+
+function TalentPicker({ draft, updateDraft }: { draft: CreationDraft; updateDraft: (p: Partial<CreationDraft>) => void }) {
+  const [busca, setBusca] = useState("");
+  const [categoria, setCategoria] = useState<TalentCategory | "">("");
+
+  const options = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    return TALENT_CATALOG.filter((t) => {
+      if (categoria && t.categoria !== categoria) return false;
+      if (q && !t.nome.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [busca, categoria]);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-2">
+        <TextField placeholder="Buscar talento..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+        <SelectField value={categoria} onChange={(e) => setCategoria(e.target.value as TalentCategory | "")}>
+          <option value="">Todas as categorias</option>
+          <option value="geral">Geral</option>
+          <option value="habilidade">Habilidade</option>
+          <option value="chakra">Chakra</option>
+          <option value="ninjutsu">Ninjutsu</option>
+          <option value="taijutsu">Taijutsu</option>
+          <option value="genjutsu">Genjutsu</option>
+          <option value="critico">Crítico</option>
+        </SelectField>
+      </div>
+      <div className="flex flex-col gap-1.5 max-h-[280px] overflow-y-auto">
+        {options.map((t) => (
+          <label
+            key={t.key}
+            className={`flex items-start gap-2 text-xs border rounded-md px-3 py-2 cursor-pointer ${
+              draft.backgroundTalentKey === t.key ? "border-primary" : "border-border"
+            }`}
+          >
+            <input
+              type="radio"
+              name="talento-antecedente"
+              className="mt-0.5"
+              checked={draft.backgroundTalentKey === t.key}
+              onChange={() => updateDraft({ backgroundTalentKey: t.key })}
+            />
+            <span>
+              <span className="font-semibold">{t.nome}</span>{" "}
+              <span className="text-muted-foreground uppercase text-[10px]">({t.categoria})</span>
+              {t.preRequisito && (
+                <>
+                  <br />
+                  <span className="text-muted-foreground">Pré-requisito: {t.preRequisito}</span>
+                </>
+              )}
+              <br />
+              <span className={`text-muted-foreground ${draft.backgroundTalentKey === t.key ? "" : "line-clamp-2"}`}>
+                {t.descricao}
+              </span>
+            </span>
+          </label>
+        ))}
+        {options.length === 0 && <p className="text-xs text-muted-foreground">Nenhum talento encontrado.</p>}
+      </div>
+    </div>
   );
 }
 
@@ -628,6 +734,7 @@ function StepReview({
   background: ReturnType<typeof getBackground>;
 }) {
   const preview = useMemo(() => assembleCharacter(draft), [draft]);
+  const backgroundTalent = getBackgroundTalent(draft);
 
   return (
     <Card>
@@ -659,6 +766,14 @@ function StepReview({
         <p>
           <span className="text-muted-foreground">Perícias proficientes:</span>{" "}
           {draft.selectedSkillKeys.length > 0 ? draft.selectedSkillKeys.join(", ") : "nenhuma"}
+        </p>
+        <p>
+          <span className="text-muted-foreground">Bônus do antecedente:</span>{" "}
+          {draft.backgroundBonusChoice === "atributo" && draft.backgroundBonusAttribute
+            ? `+1 em ${ATTRIBUTE_LABELS[draft.backgroundBonusAttribute]}`
+            : draft.backgroundBonusChoice === "talento" && backgroundTalent
+              ? `Talento: ${backgroundTalent.nome}`
+              : "—"}
         </p>
         <p>
           <span className="text-muted-foreground">Equipamento:</span> {preview.inventory.map((i) => i.nome).join(", ") || "nenhum"}

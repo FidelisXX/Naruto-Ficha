@@ -9,6 +9,7 @@ import { ARMOR_CATALOG, WEAPON_CATALOG } from "@/lib/catalog/equipment";
 import { JUTSU_CATALOG } from "@/lib/catalog/jutsu";
 import { parseAttributeChoice } from "@/lib/characterCreation/clanBonusParsing";
 import { pointBuyCost, POINT_BUY_BUDGET } from "@/lib/characterCreation/attributeGeneration";
+import { TALENT_CATALOG } from "@/lib/catalog/talents";
 import type { CreationDraft } from "@/lib/characterCreation/types";
 
 export function getClan(draft: CreationDraft) {
@@ -21,6 +22,10 @@ export function getClass(draft: CreationDraft) {
 
 export function getBackground(draft: CreationDraft) {
   return BACKGROUND_CATALOG.find((b) => b.key === draft.backgroundKey) ?? null;
+}
+
+export function getBackgroundTalent(draft: CreationDraft) {
+  return TALENT_CATALOG.find((t) => t.key === draft.backgroundTalentKey) ?? null;
 }
 
 /** Bônus de atributo total do clã (fixo + escolhas já feitas para as cláusulas "à escolha"). */
@@ -36,11 +41,13 @@ export function clanAttributeBonus(draft: CreationDraft): Partial<Record<Attribu
   return bonus;
 }
 
-/** Pontuação final de um atributo = valor bruto atribuído + bônus de clã. */
+/** Pontuação final de um atributo = valor bruto atribuído + bônus de clã + bônus opcional do antecedente. */
 export function finalAttributeScore(draft: CreationDraft, key: AttributeKey): number {
   const raw = draft.rawScores[key] ?? 10;
-  const bonus = clanAttributeBonus(draft)[key] ?? 0;
-  return raw + bonus;
+  const clanBonus = clanAttributeBonus(draft)[key] ?? 0;
+  const backgroundBonus =
+    draft.backgroundBonusChoice === "atributo" && draft.backgroundBonusAttribute === key ? 1 : 0;
+  return raw + clanBonus + backgroundBonus;
 }
 
 export function pointBuyRemaining(draft: CreationDraft): number {
@@ -83,6 +90,13 @@ export function validateStep(draft: CreationDraft, step: number): DraftValidatio
     if (!draft.nome.trim()) errors.push("Dê um nome ao personagem.");
     if (!draft.backgroundKey) errors.push("Escolha um antecedente.");
     if (draft.selectedSkillKeys.length !== 2) errors.push("Escolha exatamente 2 perícias do antecedente.");
+    if (!draft.backgroundBonusChoice) {
+      errors.push("Escolha o bônus do antecedente: +1 em um atributo ou um Talento.");
+    } else if (draft.backgroundBonusChoice === "atributo" && !draft.backgroundBonusAttribute) {
+      errors.push("Escolha o atributo que recebe o +1 do antecedente.");
+    } else if (draft.backgroundBonusChoice === "talento" && !draft.backgroundTalentKey) {
+      errors.push("Escolha o Talento concedido pelo antecedente.");
+    }
   }
   return { errors };
 }
@@ -108,6 +122,17 @@ export function assembleCharacter(draft: CreationDraft): Character {
   for (const skillKey of draft.selectedSkillKeys) {
     if (skills[skillKey]) skills[skillKey] = { ...skills[skillKey], proficiency: "proficient" };
   }
+
+  const backgroundTalent = getBackgroundTalent(draft);
+  const notes =
+    draft.backgroundBonusChoice === "talento" && backgroundTalent
+      ? [
+          blank.notes,
+          `Talento do antecedente (${background?.nome ?? "Antecedente"}): ${backgroundTalent.nome}\n${backgroundTalent.descricao}`,
+        ]
+          .filter(Boolean)
+          .join("\n\n")
+      : blank.notes;
 
   const inventory: Character["inventory"] = [];
   if (armadura) {
@@ -155,6 +180,7 @@ export function assembleCharacter(draft: CreationDraft): Character {
     },
     inventory,
     knownJutsu: [...draft.jutsuKeys],
+    notes,
   };
 }
 

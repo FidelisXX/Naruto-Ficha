@@ -1,8 +1,8 @@
 /**
  * Os 10 Antecedentes do Manual Shinobi V3.1 (Cap. 3, p. 22-27).
- * Cada um também dá "+1 em atributo(s) OU um Talento" — essa escolha não é
- * aplicada automaticamente (depende do catálogo de Talentos, ainda não
- * construído), então fica como lembrete de texto.
+ * Cada um também dá "+1 em atributo(s) OU um Talento" — essa escolha é
+ * resolvida no Passo 4 do assistente de criação de personagem (ver
+ * CharacterCreationWizard.tsx e lib/catalog/talents), não aqui.
  */
 export interface BackgroundDefinition {
   key: string;

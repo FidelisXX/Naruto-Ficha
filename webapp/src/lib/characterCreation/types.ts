@@ -24,6 +24,10 @@ export interface CreationDraft {
   ambicao: string;
   backgroundKey: string | null;
   selectedSkillKeys: string[];
+  /** Antecedente concede +1 em um atributo OU um Talento, à escolha do jogador (Manual Shinobi p.8-14). */
+  backgroundBonusChoice: "atributo" | "talento" | null;
+  backgroundBonusAttribute: AttributeKey | null;
+  backgroundTalentKey: string | null;
 
   // Passo 5 — Equipamento
   armaduraKey: string | null;
@@ -47,6 +51,9 @@ export function blankCreationDraft(): CreationDraft {
     ambicao: "",
     backgroundKey: null,
     selectedSkillKeys: [],
+    backgroundBonusChoice: null,
+    backgroundBonusAttribute: null,
+    backgroundTalentKey: null,
     armaduraKey: null,
     armaPrincipalKey: null,
     jutsuKeys: [],
