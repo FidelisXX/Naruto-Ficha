@@ -59,6 +59,10 @@ export const characterIdentitySchema = z.object({
   equipe: z.string(),
   antecedente: z.string(),
   ambicao: z.string(),
+  /** Imagem do personagem, salva como data URI (sem backend de upload). */
+  imageUrl: z.string().optional(),
+  /** Posição vertical do enquadramento da imagem (0-100), para reposicionamento manual. */
+  imagePositionY: z.number().min(0).max(100).optional(),
 });
 
 export const characterProgressionSchema = z.object({

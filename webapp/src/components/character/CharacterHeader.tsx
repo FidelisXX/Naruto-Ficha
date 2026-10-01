@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Printer } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowLeft, Camera, ImagePlus, Move, Printer, X } from "lucide-react";
 import type { Character } from "@/lib/character/schema";
 import { Stepper } from "@/components/ui/Stepper";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -18,40 +19,170 @@ export function CharacterHeader({
   const { current, next, progress } = xpProgressForLevel(nivel, xp);
   const atMaxLevel = nivel >= 20;
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ startY: number; startPos: number } | null>(null);
+  const [localPositionY, setLocalPositionY] = useState<number | null>(null);
+
+  const { imageUrl } = character.identity;
+  const positionY = localPositionY ?? character.identity.imagePositionY ?? 50;
+
+  function updateIdentity(patch: Partial<Character["identity"]>) {
+    onUpdate((c) => ({ ...c, identity: { ...c.identity, ...patch } }));
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateIdentity({ imageUrl: reader.result as string, imagePositionY: 50 });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleBannerClick() {
+    if (!imageUrl) fileInputRef.current?.click();
+  }
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (!imageUrl) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragRef.current = { startY: e.clientY, startPos: positionY };
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragRef.current || !bannerRef.current) return;
+    const height = bannerRef.current.clientHeight || 1;
+    const deltaPercent = ((e.clientY - dragRef.current.startY) / height) * 100;
+    const newPos = Math.min(100, Math.max(0, dragRef.current.startPos - deltaPercent));
+    setLocalPositionY(newPos);
+  }
+
+  function handlePointerUp() {
+    if (dragRef.current && localPositionY !== null) {
+      updateIdentity({ imagePositionY: localPositionY });
+    }
+    dragRef.current = null;
+    setLocalPositionY(null);
+  }
+
+  function handleCenterImage(e: React.MouseEvent) {
+    e.stopPropagation();
+    updateIdentity({ imagePositionY: 50 });
+  }
+
+  function handleRemoveImage(e: React.MouseEvent) {
+    e.stopPropagation();
+    updateIdentity({ imageUrl: undefined, imagePositionY: undefined });
+  }
+
   return (
     <header className="bg-surface border-b border-border">
       <div className="mx-auto w-full max-w-4xl px-4 pt-4 pb-5">
-        <div className="flex items-center justify-between mb-4">
+        <div
+          ref={bannerRef}
+          onClick={handleBannerClick}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className={`relative h-44 sm:h-56 rounded-2xl overflow-hidden bg-surface-2 mb-3 touch-none ${
+            imageUrl ? "cursor-move" : "cursor-pointer"
+          }`}
+        >
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt=""
+              draggable={false}
+              className="w-full h-full object-cover select-none pointer-events-none"
+              style={{ objectPosition: `center ${positionY}%` }}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground">
+              <ImagePlus size={28} />
+              <span className="text-xs font-medium">Adicionar imagem</span>
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/10 pointer-events-none" />
+
+          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+            <Link
+              href="/"
+              aria-label="Voltar para Meus Personagens"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+            >
+              <ArrowLeft size={18} />
+            </Link>
+            {imageUrl && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Centralizar imagem"
+                  title="Centralizar imagem"
+                  onClick={handleCenterImage}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                >
+                  <Move size={16} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Remover imagem"
+                  title="Remover imagem"
+                  onClick={handleRemoveImage}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {imageUrl && (
+            <button
+              type="button"
+              aria-label="Trocar imagem"
+              title="Trocar imagem"
+              onClick={(e) => {
+                e.stopPropagation();
+                fileInputRef.current?.click();
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+            >
+              <Camera size={16} />
+            </button>
+          )}
+        </div>
+        <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleFileChange} />
+
+        <div className="flex items-center justify-end gap-2 mb-3">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground bg-surface-2 px-2.5 py-1 rounded-full">
+            PJ
+          </span>
           <Link
-            href="/"
-            aria-label="Voltar para Meus Personagens"
+            href={`/personagem/${character.id}/imprimir`}
+            aria-label="Imprimir ficha"
+            title="Imprimir ficha"
             className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
           >
-            <ArrowLeft size={18} />
+            <Printer size={16} />
           </Link>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground bg-surface-2 px-2.5 py-1 rounded-full">
-              PJ
-            </span>
-            <Link
-              href={`/personagem/${character.id}/imprimir`}
-              aria-label="Imprimir ficha"
-              title="Imprimir ficha"
-              className="w-9 h-9 rounded-full bg-surface-2 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Printer size={16} />
-            </Link>
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
         </div>
 
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <input
               value={character.identity.nome}
-              onChange={(e) =>
-                onUpdate((c) => ({ ...c, identity: { ...c.identity, nome: e.target.value } }))
-              }
+              onChange={(e) => updateIdentity({ nome: e.target.value })}
               placeholder="Nome do personagem"
               className="w-full bg-transparent text-2xl sm:text-3xl font-extrabold uppercase tracking-tight outline-none placeholder:text-muted-foreground/50"
             />
