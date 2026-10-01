@@ -12,6 +12,7 @@ import { taijutsuJutsu } from "@/lib/catalog/jutsu/taijutsu";
 import { medicoJutsu } from "@/lib/catalog/jutsu/medico";
 import { relampagoJutsu } from "@/lib/catalog/jutsu/relampago";
 import { jutsuAburame } from "@/lib/catalog/jutsu/cla/aburame";
+import { jutsuFuma } from "@/lib/catalog/jutsu/cla/fuma";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -43,4 +44,5 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...medicoJutsu,
   ...relampagoJutsu,
   ...jutsuAburame,
+  ...jutsuFuma,
 ];
