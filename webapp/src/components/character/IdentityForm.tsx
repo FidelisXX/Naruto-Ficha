@@ -3,11 +3,11 @@ import { FieldLabel, TextField } from "@/components/ui/Field";
 import { CatalogSelect } from "@/components/ui/CatalogSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { CLASS_CATALOG } from "@/lib/catalog/classes";
+import { getClassProgression } from "@/lib/catalog/classProgression";
 import { BACKGROUND_CATALOG } from "@/lib/catalog/backgrounds";
 import { CLAN_CATALOG } from "@/lib/catalog/clans";
 
 const TEXT_FIELDS: { key: keyof CharacterIdentity; label: string; placeholder?: string }[] = [
-  { key: "subClasse", label: "Sub-Classe" },
   { key: "vila", label: "Vila" },
   { key: "equipe", label: "Equipe" },
 ];
@@ -26,6 +26,14 @@ export function IdentityForm({
   function setField(key: keyof CharacterIdentity, value: string) {
     onUpdate((c) => ({ ...c, identity: { ...c.identity, [key]: value } }));
   }
+
+  function setClasse(value: string) {
+    onUpdate((c) => ({ ...c, identity: { ...c.identity, classe: value, subClasse: "" } }));
+  }
+
+  const klass = CLASS_CATALOG.find((c) => c.nome === character.identity.classe);
+  const progression = klass ? getClassProgression(klass.key) : undefined;
+  const subclassNames = progression?.subclasses.map((s) => s.nome) ?? [];
 
   return (
     <Card>
@@ -53,7 +61,7 @@ export function IdentityForm({
           id="classe"
           label="Classe"
           value={character.identity.classe}
-          onChange={(value) => setField("classe", value)}
+          onChange={setClasse}
           options={CLASS_NAMES}
         />
         <CatalogSelect
@@ -63,6 +71,26 @@ export function IdentityForm({
           onChange={(value) => setField("antecedente", value)}
           options={BACKGROUND_NAMES}
         />
+
+        {subclassNames.length > 0 ? (
+          <CatalogSelect
+            key={character.identity.classe}
+            id="subClasse"
+            label={progression ? progression.nomeGrupoSubclasse : "Sub-Classe"}
+            value={character.identity.subClasse}
+            onChange={(value) => setField("subClasse", value)}
+            options={subclassNames}
+          />
+        ) : (
+          <div>
+            <FieldLabel htmlFor="subClasse">Sub-Classe</FieldLabel>
+            <TextField
+              id="subClasse"
+              value={character.identity.subClasse}
+              onChange={(e) => setField("subClasse", e.target.value)}
+            />
+          </div>
+        )}
 
         {TEXT_FIELDS.map((field) => (
           <div key={field.key}>
