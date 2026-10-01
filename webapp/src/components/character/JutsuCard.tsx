@@ -90,7 +90,7 @@ export function JutsuCard({
       )}
 
       <div className="flex items-center gap-3 text-xs">
-        <span className="text-chakra font-semibold">{jutsu.custoChakra} Chakra</span>
+        <span className="text-chakra font-semibold">{jutsu.custoChakraTexto ?? `${jutsu.custoChakra} Chakra`}</span>
         <span className="text-muted-foreground">
           Ataque {formatModifier(attackBonus(mod, proficiencyBonus))} · CD {jutsuSaveDC(mod, proficiencyBonus)}
         </span>

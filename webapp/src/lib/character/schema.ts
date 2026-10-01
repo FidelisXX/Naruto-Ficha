@@ -18,9 +18,11 @@ export const customJutsuSchema = z.object({
   duracao: z.string(),
   componentes: z.array(z.string()),
   custoChakra: z.number().int().min(0),
+  custoChakraTexto: z.string().optional(),
   palavrasChave: z.array(z.string()),
   descricao: z.string(),
   emNiveisSuperiores: z.string().optional(),
+  cla: z.string().optional(),
 });
 
 export const attributeScoresSchema = z.object(

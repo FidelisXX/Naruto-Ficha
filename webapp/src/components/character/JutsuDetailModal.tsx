@@ -30,7 +30,7 @@ export function JutsuDetailModal({
   const mod = abilityModifier(character.attributes[TIPO_ATTRIBUTE[jutsu.tipo]]);
 
   const infoFields: [string, string][] = [
-    ["Custo Chakra", `${jutsu.custoChakra} pontos`],
+    ["Custo Chakra", jutsu.custoChakraTexto ?? `${jutsu.custoChakra} pontos`],
     ["Tempo de Ação", jutsu.tempoConjuracao],
     ["Alcance", jutsu.alcance],
     ["Duração", jutsu.duracao],
@@ -43,7 +43,7 @@ export function JutsuDetailModal({
       jutsu.nome,
       `${JUTSU_TIPO_LABELS[jutsu.tipo]}${jutsu.natureza ? ` · ${JUTSU_NATUREZA_LABELS[jutsu.natureza]}` : ""} · Rank ${jutsu.rank}`,
       `Conjuração: ${jutsu.tempoConjuracao} · Alcance: ${jutsu.alcance} · Duração: ${jutsu.duracao}`,
-      `Componentes: ${jutsu.componentes.join(", ") || "—"} · Custo: ${jutsu.custoChakra} Chakra`,
+      `Componentes: ${jutsu.componentes.join(", ") || "—"} · Custo: ${jutsu.custoChakraTexto ?? `${jutsu.custoChakra} Chakra`}`,
       "",
       jutsu.descricao,
       jutsu.emNiveisSuperiores ? `\nEm Níveis Superiores: ${jutsu.emNiveisSuperiores}` : "",

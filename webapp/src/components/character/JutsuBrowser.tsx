@@ -10,6 +10,7 @@ import { JutsuCard } from "@/components/character/JutsuCard";
 import { JutsuCompactRow } from "@/components/character/JutsuCompactRow";
 import { JutsuDetailModal } from "@/components/character/JutsuDetailModal";
 import { JUTSU_CATALOG } from "@/lib/catalog/jutsu";
+import { CLAN_CATALOG } from "@/lib/catalog/clans";
 import {
   JUTSU_NATUREZA_LABELS,
   JUTSU_RANK_ORDER,
@@ -31,7 +32,13 @@ export function JutsuBrowser({
   const [tipo, setTipo] = useState<JutsuTipo | "">("");
   const [rank, setRank] = useState<JutsuRank | "">("");
   const [natureza, setNatureza] = useState<JutsuNatureza | "">("");
+  const [cla, setCla] = useState<string>("");
   const [detailJutsu, setDetailJutsu] = useState<JutsuDefinition | null>(null);
+
+  const clanOptions = useMemo(() => {
+    const keys = new Set(JUTSU_CATALOG.map((j) => j.cla).filter(Boolean) as string[]);
+    return CLAN_CATALOG.filter((c) => keys.has(c.key)).sort((a, b) => a.nome.localeCompare(b.nome));
+  }, []);
 
   function toggleKnown(key: string) {
     onUpdate((c) => ({
@@ -60,13 +67,14 @@ export function JutsuBrowser({
       if (tipo && j.tipo !== tipo) return false;
       if (rank && j.rank !== rank) return false;
       if (natureza && j.natureza !== natureza) return false;
+      if (cla && j.cla !== cla) return false;
       if (query) {
         const haystack = `${j.nome} ${j.palavrasChave.join(" ")} ${j.descricao}`.toLowerCase();
         if (!haystack.includes(query)) return false;
       }
       return true;
     });
-  }, [busca, tipo, rank, natureza]);
+  }, [busca, tipo, rank, natureza, cla]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -132,7 +140,7 @@ export function JutsuBrowser({
               onChange={(e) => setBusca(e.target.value)}
             />
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className={`grid gap-2 ${clanOptions.length > 0 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
             <div>
               <FieldLabel htmlFor="jutsu-tipo">Tipo</FieldLabel>
               <SelectField
@@ -178,6 +186,19 @@ export function JutsuBrowser({
                 ))}
               </SelectField>
             </div>
+            {clanOptions.length > 0 && (
+              <div>
+                <FieldLabel htmlFor="jutsu-cla">Clã</FieldLabel>
+                <SelectField id="jutsu-cla" value={cla} onChange={(e) => setCla(e.target.value)}>
+                  <option value="">Todos</option>
+                  {clanOptions.map((c) => (
+                    <option key={c.key} value={c.key}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </SelectField>
+              </div>
+            )}
           </div>
 
           <p className="text-[11px] text-muted-foreground">

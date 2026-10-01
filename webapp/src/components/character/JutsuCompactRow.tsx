@@ -40,7 +40,7 @@ export function JutsuCompactRow({
         <span className="min-w-0 flex-1">
           <span className="text-sm font-semibold truncate block">{jutsu.nome}</span>
           <span className="text-[11px] text-muted-foreground">
-            {jutsu.custoChakra} Chakra · {JUTSU_TIPO_LABELS[jutsu.tipo]}
+            {jutsu.custoChakraTexto ?? `${jutsu.custoChakra} Chakra`} · {JUTSU_TIPO_LABELS[jutsu.tipo]}
           </span>
         </span>
         <ChevronRight size={16} className="text-muted-foreground shrink-0" />

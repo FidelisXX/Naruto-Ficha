@@ -74,7 +74,11 @@ export interface JutsuDefinition {
   duracao: string;
   componentes: string[];
   custoChakra: number;
+  /** Sobrescreve a exibição do custo quando não é um valor fixo (ex: "Especial", Hijutsu de clã). */
+  custoChakraTexto?: string;
   palavrasChave: string[];
   descricao: string;
   emNiveisSuperiores?: string;
+  /** Chave de ClanDefinition (catalog/clans) quando o jutsu é um Hijutsu exclusivo de clã. */
+  cla?: string;
 }
