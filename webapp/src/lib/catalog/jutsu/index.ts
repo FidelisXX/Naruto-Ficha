@@ -32,6 +32,7 @@ import { jutsuKuru } from "@/lib/catalog/jutsu/cla/kuru";
 import { jutsuJugo } from "@/lib/catalog/jutsu/cla/jugo";
 import { jutsuHumanosSinteticos } from "@/lib/catalog/jutsu/cla/humanosSinteticos";
 import { jutsuShikigami } from "@/lib/catalog/jutsu/cla/shikigami";
+import { jutsuInuzuka } from "@/lib/catalog/jutsu/cla/inuzuka";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -83,4 +84,5 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...jutsuJugo,
   ...jutsuHumanosSinteticos,
   ...jutsuShikigami,
+  ...jutsuInuzuka,
 ];
