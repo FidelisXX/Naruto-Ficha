@@ -14,14 +14,14 @@ import {
 } from "@/lib/rules";
 
 /** Atributo usado por cada tipo de jutsu (Manual Shinobi: Ninshou=Int, Ilusões=Sab, Artes Marciais=For). */
-const TIPO_ATTRIBUTE: Record<JutsuDefinition["tipo"], "int" | "sab" | "for"> = {
+export const TIPO_ATTRIBUTE: Record<JutsuDefinition["tipo"], "int" | "sab" | "for"> = {
   ninjutsu: "int",
   genjutsu: "sab",
   taijutsu: "for",
   bukijutsu: "for",
 };
 
-const RANK_COLOR: Record<JutsuDefinition["rank"], string> = {
+export const RANK_COLOR: Record<JutsuDefinition["rank"], string> = {
   E: "text-muted-foreground border-border",
   D: "text-success border-success/40",
   C: "text-primary border-primary/40",

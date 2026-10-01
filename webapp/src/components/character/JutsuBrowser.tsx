@@ -7,11 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel, SelectField, TextField } from "@/components/ui/Field";
 import { JutsuCard } from "@/components/character/JutsuCard";
+import { JutsuCompactRow } from "@/components/character/JutsuCompactRow";
+import { JutsuDetailModal } from "@/components/character/JutsuDetailModal";
 import { JUTSU_CATALOG } from "@/lib/catalog/jutsu";
 import {
   JUTSU_NATUREZA_LABELS,
   JUTSU_RANK_ORDER,
   JUTSU_TIPO_LABELS,
+  type JutsuDefinition,
   type JutsuNatureza,
   type JutsuRank,
   type JutsuTipo,
@@ -28,6 +31,7 @@ export function JutsuBrowser({
   const [tipo, setTipo] = useState<JutsuTipo | "">("");
   const [rank, setRank] = useState<JutsuRank | "">("");
   const [natureza, setNatureza] = useState<JutsuNatureza | "">("");
+  const [detailJutsu, setDetailJutsu] = useState<JutsuDefinition | null>(null);
 
   function toggleKnown(key: string) {
     onUpdate((c) => ({
@@ -90,21 +94,19 @@ export function JutsuBrowser({
           ) : (
             <>
               {character.customJutsu.map((j) => (
-                <JutsuCard
+                <JutsuCompactRow
                   key={j.key}
                   jutsu={j}
-                  character={character}
-                  isKnown
+                  onExpand={() => setDetailJutsu(j)}
                   onDelete={() => deleteCustomJutsu(j.key)}
                 />
               ))}
               {known.map((j) => (
-                <JutsuCard
+                <JutsuCompactRow
                   key={j.key}
                   jutsu={j}
-                  character={character}
-                  isKnown
-                  onToggleKnown={() => toggleKnown(j.key)}
+                  onExpand={() => setDetailJutsu(j)}
+                  onRemove={() => toggleKnown(j.key)}
                 />
               ))}
             </>
@@ -199,6 +201,10 @@ export function JutsuBrowser({
           </div>
         </CardContent>
       </Card>
+
+      {detailJutsu && (
+        <JutsuDetailModal jutsu={detailJutsu} character={character} onClose={() => setDetailJutsu(null)} />
+      )}
     </div>
   );
 }
