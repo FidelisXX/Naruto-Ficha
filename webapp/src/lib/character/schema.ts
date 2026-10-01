@@ -63,6 +63,8 @@ export const characterIdentitySchema = z.object({
   imageUrl: z.string().optional(),
   /** Posição vertical do enquadramento da imagem (0-100), para reposicionamento manual. */
   imagePositionY: z.number().min(0).max(100).optional(),
+  /** "cover" recorta a imagem para preencher o quadro; "contain" mostra a imagem inteira. */
+  imageFit: z.enum(["cover", "contain"]).optional(),
 });
 
 export const characterProgressionSchema = z.object({

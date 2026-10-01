@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { ArrowLeft, Camera, ImagePlus, Move, Printer, X } from "lucide-react";
+import { ArrowLeft, Camera, ImagePlus, Maximize2, Minimize2, Move, Printer, X } from "lucide-react";
 import type { Character } from "@/lib/character/schema";
 import { Stepper } from "@/components/ui/Stepper";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -25,6 +25,7 @@ export function CharacterHeader({
   const [localPositionY, setLocalPositionY] = useState<number | null>(null);
 
   const { imageUrl } = character.identity;
+  const imageFit = character.identity.imageFit ?? "cover";
   const positionY = localPositionY ?? character.identity.imagePositionY ?? 50;
 
   function updateIdentity(patch: Partial<Character["identity"]>) {
@@ -47,7 +48,7 @@ export function CharacterHeader({
   }
 
   function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    if (!imageUrl) return;
+    if (!imageUrl || imageFit === "contain") return;
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { startY: e.clientY, startPos: positionY };
   }
@@ -75,7 +76,12 @@ export function CharacterHeader({
 
   function handleRemoveImage(e: React.MouseEvent) {
     e.stopPropagation();
-    updateIdentity({ imageUrl: undefined, imagePositionY: undefined });
+    updateIdentity({ imageUrl: undefined, imagePositionY: undefined, imageFit: undefined });
+  }
+
+  function handleToggleFit(e: React.MouseEvent) {
+    e.stopPropagation();
+    updateIdentity({ imageFit: imageFit === "cover" ? "contain" : "cover" });
   }
 
   return (
@@ -89,7 +95,7 @@ export function CharacterHeader({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           className={`relative h-44 sm:h-56 rounded-2xl overflow-hidden bg-surface-2 mb-3 touch-none ${
-            imageUrl ? "cursor-move" : "cursor-pointer"
+            imageUrl && imageFit === "cover" ? "cursor-move" : imageUrl ? "" : "cursor-pointer"
           }`}
         >
           {imageUrl ? (
@@ -97,8 +103,10 @@ export function CharacterHeader({
               src={imageUrl}
               alt=""
               draggable={false}
-              className="w-full h-full object-cover select-none pointer-events-none"
-              style={{ objectPosition: `center ${positionY}%` }}
+              className={`w-full h-full select-none pointer-events-none ${
+                imageFit === "contain" ? "object-contain bg-black" : "object-cover"
+              }`}
+              style={imageFit === "cover" ? { objectPosition: `center ${positionY}%` } : undefined}
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -121,15 +129,27 @@ export function CharacterHeader({
             </Link>
             {imageUrl && (
               <div className="flex items-center gap-2">
+                {imageFit === "cover" && (
+                  <button
+                    type="button"
+                    aria-label="Centralizar imagem"
+                    title="Centralizar imagem"
+                    onClick={handleCenterImage}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
+                  >
+                    <Move size={16} />
+                  </button>
+                )}
                 <button
                   type="button"
-                  aria-label="Centralizar imagem"
-                  title="Centralizar imagem"
-                  onClick={handleCenterImage}
+                  aria-label={imageFit === "cover" ? "Mostrar imagem inteira" : "Preencher o quadro"}
+                  title={imageFit === "cover" ? "Mostrar imagem inteira" : "Preencher o quadro"}
+                  onClick={handleToggleFit}
                   onPointerDown={(e) => e.stopPropagation()}
                   className="w-9 h-9 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-black/60 transition-colors"
                 >
-                  <Move size={16} />
+                  {imageFit === "cover" ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
                 </button>
                 <button
                   type="button"
