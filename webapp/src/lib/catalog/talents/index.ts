@@ -8,14 +8,17 @@ import { talentosTaijutsu1 } from "@/lib/catalog/talents/taijutsu1";
 import { talentosTaijutsu2 } from "@/lib/catalog/talents/taijutsu2";
 import { talentosGenjutsu } from "@/lib/catalog/talents/genjutsu";
 import { talentosCritico } from "@/lib/catalog/talents/critico";
+import { talentosClasse } from "@/lib/catalog/talents/classe";
 
 /**
- * Catálogo de Talentos (feats) — Manual Shinobi, Cap. 13, p.208-246.
- * Cobre as 7 categorias gerais do capítulo (Geral, Habilidade, Chakra,
- * Ninjutsu, Taijutsu — incl. subcategoria Bukijutsu e 8-Portões Internos —,
- * Genjutsu e Crítico). As categorias Clã, Classe e Arquétipo mencionadas na
- * introdução do capítulo ficam fora de escopo — dependem de outros
- * compêndios não disponíveis neste projeto (ver ROADMAP.md).
+ * Catálogo de Talentos (feats) — Manual Shinobi, Cap. 13, p.208-246, mais
+ * a categoria Classe de "Observações do Orochimaru", p.342-357.
+ * Cobre as 7 categorias gerais do Manual Shinobi (Geral, Habilidade,
+ * Chakra, Ninjutsu, Taijutsu — incl. subcategoria Bukijutsu e 8-Portões
+ * Internos —, Genjutsu e Crítico) e a categoria Classe (talentos de
+ * Arquétipo e de Classe por extenso). A categoria Clã mencionada na
+ * introdução do Manual Shinobi fica fora de escopo — depende de outro
+ * compêndio não disponível neste projeto (ver ROADMAP.md).
  */
 export const TALENT_CATALOG: TalentDefinition[] = [
   ...talentosGeral,
@@ -27,4 +30,5 @@ export const TALENT_CATALOG: TalentDefinition[] = [
   ...talentosTaijutsu2,
   ...talentosGenjutsu,
   ...talentosCritico,
+  ...talentosClasse,
 ];
