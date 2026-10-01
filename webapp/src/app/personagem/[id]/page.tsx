@@ -18,6 +18,7 @@ import { InventoryPanel } from "@/components/character/InventoryPanel";
 import { AttributesGrid } from "@/components/character/AttributesGrid";
 import { IdentityForm } from "@/components/character/IdentityForm";
 import { CatalogInfoPanel } from "@/components/character/CatalogInfoPanel";
+import { ClassProgressionPanel } from "@/components/character/ClassProgressionPanel";
 import { ProgressionPanel } from "@/components/character/ProgressionPanel";
 import { SkillsTable } from "@/components/character/SkillsTable";
 import { JutsuBrowser } from "@/components/character/JutsuBrowser";
@@ -98,6 +99,7 @@ export default function CharacterSheetPage() {
           <>
             <IdentityForm character={character} onUpdate={onUpdate} />
             <CatalogInfoPanel character={character} onUpdate={onUpdate} />
+            <ClassProgressionPanel character={character} />
             <ProgressionPanel character={character} onUpdate={onUpdate} />
             <Card>
               <CardHeader>
