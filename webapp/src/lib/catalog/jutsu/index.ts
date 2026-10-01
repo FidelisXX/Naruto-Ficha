@@ -11,6 +11,7 @@ import { genjutsuPart2 } from "@/lib/catalog/jutsu/genjutsu2";
 import { taijutsuJutsu } from "@/lib/catalog/jutsu/taijutsu";
 import { medicoJutsu } from "@/lib/catalog/jutsu/medico";
 import { relampagoJutsu } from "@/lib/catalog/jutsu/relampago";
+import { jutsuAburame } from "@/lib/catalog/jutsu/cla/aburame";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -23,6 +24,10 @@ import { relampagoJutsu } from "@/lib/catalog/jutsu/relampago";
  * Status desta leva (ver ROADMAP.md): completa — Ninjutsu (Não Elemental,
  * Médico, Estilo Terra, Vento, Fogo, Água e Relâmpago), Genjutsu, Taijutsu
  * e Bukijutsu, todos em Rank E/D.
+ *
+ * Também inclui os Hijutsu exclusivos de clã (Estudos da Tsunade),
+ * catalogados clã a clã conforme ficam prontos (catalog/jutsu/cla/*.ts) —
+ * ver cada arquivo para o status de cada clã.
  */
 export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...naoElementalJutsu,
@@ -37,4 +42,5 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...taijutsuJutsu,
   ...medicoJutsu,
   ...relampagoJutsu,
+  ...jutsuAburame,
 ];
