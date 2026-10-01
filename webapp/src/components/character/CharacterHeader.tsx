@@ -11,9 +11,12 @@ import { formatModifier, proficiencyBonusForLevel, xpProgressForLevel } from "@/
 export function CharacterHeader({
   character,
   onUpdate,
+  onLevelUp,
 }: {
   character: Character;
   onUpdate: (updater: (character: Character) => Character) => void;
+  /** Quando presente, incrementos de nível passam por aqui em vez de aplicar direto (ver LevelUpModal). */
+  onLevelUp?: (targetLevel: number) => void;
 }) {
   const { nivel, xp } = character.progression;
   const { current, next, progress } = xpProgressForLevel(nivel, xp);
@@ -221,9 +224,13 @@ export function CharacterHeader({
               value={nivel}
               min={1}
               max={20}
-              onChange={(value) =>
-                onUpdate((c) => ({ ...c, progression: { ...c.progression, nivel: value } }))
-              }
+              onChange={(value) => {
+                if (onLevelUp && value > nivel) {
+                  onLevelUp(value);
+                } else {
+                  onUpdate((c) => ({ ...c, progression: { ...c.progression, nivel: value } }));
+                }
+              }}
             />
             <p className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
               Prof. {formatModifier(proficiencyBonusForLevel(nivel))}

@@ -7,6 +7,7 @@ import { Award, Backpack, BookUser, Flame, ListChecks, Swords, User } from "luci
 import { useCharacterStore } from "@/store/characterStore";
 import type { Character } from "@/lib/character/schema";
 import { CharacterHeader } from "@/components/character/CharacterHeader";
+import { LevelUpModal } from "@/components/character/LevelUpModal";
 import { QuickStatsRow } from "@/components/character/QuickStatsRow";
 import { CombatStatsPanel } from "@/components/character/CombatStatsPanel";
 import { ClanAttributeNotice } from "@/components/character/ClanAttributeNotice";
@@ -43,6 +44,7 @@ export default function CharacterSheetPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [tab, setTab] = useState<TabKey>("ficha");
+  const [levelUpTarget, setLevelUpTarget] = useState<number | null>(null);
 
   const hasHydrated = useCharacterStore((state) => state.hasHydrated);
   const character = useCharacterStore((state) => state.characters[id]);
@@ -73,7 +75,19 @@ export default function CharacterSheetPage() {
 
   return (
     <div className="flex-1 flex flex-col min-h-dvh">
-      <CharacterHeader character={character} onUpdate={onUpdate} />
+      <CharacterHeader character={character} onUpdate={onUpdate} onLevelUp={setLevelUpTarget} />
+
+      {levelUpTarget !== null && (
+        <LevelUpModal
+          character={character}
+          targetLevel={levelUpTarget}
+          onClose={() => setLevelUpTarget(null)}
+          onConfirm={(updater) => {
+            onUpdate(updater);
+            setLevelUpTarget(null);
+          }}
+        />
+      )}
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-4 flex flex-col gap-3">
         {tab === "ficha" && (
