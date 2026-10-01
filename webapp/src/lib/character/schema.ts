@@ -171,6 +171,8 @@ export const characterSchema = z.object({
   equipment: equipmentRefsSchema,
   /** Chaves de JutsuDefinition (catalog/jutsu) que o personagem conhece. */
   knownJutsu: z.array(z.string()),
+  /** Chaves de TalentDefinition (catalog/talents) que o personagem possui. */
+  knownTalents: z.array(z.string()),
   /** Jutsus criados/personalizados pelo jogador (Fase 5), sempre "conhecidos". */
   customJutsu: z.array(customJutsuSchema),
   notes: z.string(),

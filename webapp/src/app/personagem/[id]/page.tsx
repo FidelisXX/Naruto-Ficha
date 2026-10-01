@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Backpack, BookUser, Flame, ListChecks, Swords, User } from "lucide-react";
+import { Award, Backpack, BookUser, Flame, ListChecks, Swords, User } from "lucide-react";
 import { useCharacterStore } from "@/store/characterStore";
 import type { Character } from "@/lib/character/schema";
 import { CharacterHeader } from "@/components/character/CharacterHeader";
@@ -22,11 +22,12 @@ import { ClassProgressionPanel } from "@/components/character/ClassProgressionPa
 import { ProgressionPanel } from "@/components/character/ProgressionPanel";
 import { SkillsTable } from "@/components/character/SkillsTable";
 import { JutsuBrowser } from "@/components/character/JutsuBrowser";
+import { TalentBrowser } from "@/components/character/TalentBrowser";
 import { CombatModePanel } from "@/components/character/CombatModePanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { TabBar, type TabBarItem } from "@/components/ui/TabBar";
 
-type TabKey = "ficha" | "identidade" | "itens" | "pericias" | "jutsu" | "combate";
+type TabKey = "ficha" | "identidade" | "itens" | "pericias" | "jutsu" | "talentos" | "combate";
 
 const TABS: TabBarItem<TabKey>[] = [
   { key: "ficha", label: "Ficha", icon: User },
@@ -34,6 +35,7 @@ const TABS: TabBarItem<TabKey>[] = [
   { key: "itens", label: "Itens", icon: Backpack },
   { key: "pericias", label: "Perícias", icon: ListChecks },
   { key: "jutsu", label: "Jutsu", icon: Flame },
+  { key: "talentos", label: "Talentos", icon: Award },
   { key: "combate", label: "Combate", icon: Swords },
 ];
 
@@ -105,8 +107,8 @@ export default function CharacterSheetPage() {
               <CardHeader>
                 <CardTitle className="text-muted-foreground">Anotações</CardTitle>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Espaço livre para características de Clã, Classe, Sub-Classe e Talentos, até
-                  esses catálogos serem cadastrados no app (Fase 2).
+                  Espaço livre para características de Clã ainda não cadastradas no app e outras
+                  anotações gerais.
                 </p>
               </CardHeader>
               <CardContent>
@@ -123,6 +125,8 @@ export default function CharacterSheetPage() {
         {tab === "pericias" && <SkillsTable character={character} onUpdate={onUpdate} />}
 
         {tab === "jutsu" && <JutsuBrowser character={character} onUpdate={onUpdate} />}
+
+        {tab === "talentos" && <TalentBrowser character={character} onUpdate={onUpdate} />}
 
         {tab === "combate" && <CombatModePanel character={character} onUpdate={onUpdate} />}
       </main>
