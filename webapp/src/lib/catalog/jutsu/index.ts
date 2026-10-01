@@ -17,6 +17,7 @@ import { jutsuHanami } from "@/lib/catalog/jutsu/cla/hanami";
 import { jutsuVesper } from "@/lib/catalog/jutsu/cla/vesper";
 import { jutsuYamada } from "@/lib/catalog/jutsu/cla/yamada";
 import { jutsuNara } from "@/lib/catalog/jutsu/cla/nara";
+import { jutsuKeton } from "@/lib/catalog/jutsu/cla/keton";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -53,4 +54,5 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...jutsuVesper,
   ...jutsuYamada,
   ...jutsuNara,
+  ...jutsuKeton,
 ];
