@@ -45,6 +45,7 @@ import { jutsuRanton } from "@/lib/catalog/jutsu/cla/ranton";
 import { jutsuGenwa } from "@/lib/catalog/jutsu/cla/genwa";
 import { jutsuIburi } from "@/lib/catalog/jutsu/cla/iburi";
 import { jutsuChinoike } from "@/lib/catalog/jutsu/cla/chinoike";
+import { jutsuHyuga } from "@/lib/catalog/jutsu/cla/hyuga";
 
 /**
  * Catálogo inicial de Jutsu — Anotações do Jiraya (compêndio de jutsus
@@ -109,4 +110,5 @@ export const JUTSU_CATALOG: JutsuDefinition[] = [
   ...jutsuGenwa,
   ...jutsuIburi,
   ...jutsuChinoike,
+  ...jutsuHyuga,
 ];
